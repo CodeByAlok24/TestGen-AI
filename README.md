@@ -34,13 +34,14 @@ Manual test writing is often repetitive, slow, and inconsistent. This project re
 
 ### Backend
 
-- Python 3.11+
-- Django + Django REST Framework
-- MySQL (Docker mode) or SQLite (local fallback)
-- `python-dotenv`, `django-cors-headers`
+- Node.js 20+
+- Express.js REST API
+- PostgreSQL for persistent storage
+- Redis for caching generated results
+- JWT authentication
 - LLM providers:
   - Groq/OpenAI-compatible API mode
-  - Local model mode via exported model engine (`TCG_Model_Export`)
+  - Mock/local fallback mode for offline development
 
 ### Frontend
 
@@ -53,11 +54,12 @@ Manual test writing is often repetitive, slow, and inconsistent. This project re
 ### DevOps
 
 - Docker + Docker Compose
+- Deployment targets: AWS or Vercel
 - Optional GitHub Actions workflow export
 
 ## High-Level Architecture
 
-`Frontend (React)` -> `Django REST API` -> `LLM Provider (API or Local Model)` -> `Generated Tests + Scores`
+`Frontend (React)` -> `Express REST API` -> `Redis Cache + PostgreSQL` -> `LLM Provider` -> `Generated Tests + Scores`
 
 ### Main API endpoints
 
@@ -73,11 +75,8 @@ Manual test writing is often repetitive, slow, and inconsistent. This project re
 ```text
 team24/
   backend/
-    api/
-    testgen/
-    TCG_Model_Export/
-    manage.py
-    requirements.txt
+    src/
+    package.json
   frontend/
     src/
     package.json
@@ -91,7 +90,7 @@ team24/
 Install the following before setup:
 
 - Docker Desktop (for containerized run)
-- Python 3.11+ and pip (for local backend run)
+- Node.js 20+ and npm (for local backend run)
 - Node.js 20+ and npm (for local frontend run)
 
 ## Option 1: Run End-to-End with Docker (Recommended)
@@ -104,8 +103,9 @@ docker compose up --build
 
 Services started:
 
-- MySQL: `localhost:3306`
-- Django backend: `http://localhost:8000`
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+- Express backend: `http://localhost:8000`
 - React frontend: `http://localhost:5173`
 
 Stop all services:
@@ -120,37 +120,11 @@ docker compose down
 
 ```bash
 cd backend
-python -m venv .venv
+npm install
+npm run dev
 ```
 
-Activate venv:
-
-- Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-- macOS/Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run migrations and start server:
-
-```bash
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
-```
-
-Note: if `DB_HOST` is not set, backend automatically uses SQLite.
+The backend expects PostgreSQL and Redis to be running locally, or available through the environment variables below.
 
 ### 2) Frontend setup
 
@@ -171,27 +145,26 @@ Frontend default API base is `http://localhost:8000/api`.
 You can use a `.env` file with these keys:
 
 ```env
-DJANGO_SECRET_KEY=dev-secret-key
-DJANGO_DEBUG=1
-DJANGO_ALLOWED_HOSTS=*
+PORT=8000
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=dev-jwt-secret
 
-# Optional DB settings (if omitted, SQLite is used)
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=testgen
-DB_USER=root
-DB_PASSWORD=root
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=testgen
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/testgen
 
-# LLM provider defaults
+REDIS_URL=redis://localhost:6379
+
 # valid values: mock, api, openai, groq, local
 LLM_PROVIDER=mock
 
-# If using OpenAI
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 OPENAI_TEMPERATURE=0.2
 
-# If using Groq
 GROQ_API_KEY=
 GROQ_MODEL=llama-3.3-70b-versatile
 GROQ_TEMPERATURE=0.2
@@ -230,23 +203,24 @@ Use the sample scenarios in `demo_samples.md` for quick validation of:
 - Self-heal behavior
 - CI export behavior
 
-## Local Custom Model Notes
+## Deployment Notes
 
-- Local model integration is loaded from `backend/TCG_Model_Export/`.
-- Model runtime requires `mlx-lm`.
-- If local provider initialization fails, backend returns a descriptive error.
+- Frontend can be deployed to Vercel.
+- Backend can be containerized with Docker and deployed to AWS services such as ECS, App Runner, or EC2.
+- PostgreSQL and Redis can be hosted with managed cloud services.
 
 ## Troubleshooting
 
-- Backend fails to connect to MySQL:
-  - Verify `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`.
-  - If running locally without MySQL, remove `DB_HOST` to use SQLite fallback.
+- Backend fails to connect to PostgreSQL:
+  - Verify `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, or `DATABASE_URL`.
+- Backend fails to connect to Redis:
+  - Verify `REDIS_URL`.
 - API calls fail from frontend:
   - Confirm backend is running at `http://localhost:8000`.
   - Verify `VITE_API_BASE`.
 - LLM provider errors:
   - Check API key presence for selected provider.
-  - For `local`, ensure `TCG_Model_Export` exists and dependencies are installed.
+  - `local` currently behaves as a safe fallback mode inside the Node backend.
 
 ## Team
 

@@ -54,6 +54,24 @@ export default function OutputPanel({ tests }) {
         </div>
       }
     >
+      <div className="mb-4 grid gap-3 md:grid-cols-3">
+        {tabs.map((item) => (
+          <div
+            key={`${item.id}-stat`}
+            className={`rounded-[22px] border px-4 py-3 ${
+              tab === item.id
+                ? 'border-[var(--accent-border)] bg-[#eef4ff]'
+                : 'border-[var(--border)] bg-[var(--panel)]'
+            }`}
+          >
+            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+              Framework
+            </div>
+            <div className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{item.label}</div>
+          </div>
+        ))}
+      </div>
+
       <div className="mb-4 flex flex-wrap gap-2">
         {tabs.map((t) => (
           <button
@@ -67,7 +85,7 @@ export default function OutputPanel({ tests }) {
         ))}
       </div>
 
-      <div className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] overflow-hidden">
+      <div className="overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--panel)] shadow-inner">
         <pre className="m-0 max-h-[520px] overflow-auto p-4 text-xs leading-6 text-[var(--text)]">
           <code>{code || 'Generate tests to see output here.'}</code>
         </pre>
