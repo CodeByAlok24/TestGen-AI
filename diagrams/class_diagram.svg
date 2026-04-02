@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <rect width="1600" height="980" fill="#f8fafc"/>
+  <text x="800" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#0f172a">TestGen AI - Class / Component Diagram</text>
+
+  <g fill="#ffffff" stroke="#94a3b8" stroke-width="2">
+    <rect x="90" y="130" width="290" height="210" rx="18"/>
+    <rect x="470" y="130" width="290" height="230" rx="18"/>
+    <rect x="850" y="130" width="310" height="260" rx="18"/>
+    <rect x="1250" y="130" width="230" height="150" rx="18"/>
+
+    <rect x="470" y="540" width="330" height="250" rx="18"/>
+    <rect x="930" y="540" width="320" height="190" rx="18"/>
+  </g>
+
+  <g fill="#dbeafe" stroke="#94a3b8" stroke-width="2">
+    <rect x="90" y="130" width="290" height="48" rx="18"/>
+    <rect x="470" y="130" width="290" height="48" rx="18"/>
+    <rect x="850" y="130" width="310" height="48" rx="18"/>
+    <rect x="1250" y="130" width="230" height="48" rx="18"/>
+  </g>
+  <rect x="470" y="540" width="330" height="48" rx="18" fill="#dcfce7" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="930" y="540" width="320" height="48" rx="18" fill="#fef3c7" stroke="#94a3b8" stroke-width="2"/>
+
+  <g font-family="Arial, sans-serif" fill="#334155">
+    <text x="235" y="162" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a8a">Frontend UI</text>
+    <text x="115" y="215" font-size="18">• App.jsx</text>
+    <text x="115" y="250" font-size="18">• InputPanel / OutputPanel</text>
+    <text x="115" y="285" font-size="18">• Quality / Heal / CI panels</text>
+    <text x="115" y="320" font-size="18">• lib/api.js</text>
+
+    <text x="615" y="162" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a8a">API Layer</text>
+    <text x="495" y="215" font-size="18">• GenerateTestsView</text>
+    <text x="495" y="250" font-size="18">• HealTestView</text>
+    <text x="495" y="285" font-size="18">• CIExportView</text>
+    <text x="495" y="320" font-size="18">• SessionsView</text>
+    <text x="495" y="355" font-size="18">• Serializers</text>
+
+    <text x="1005" y="162" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a8a">Service Layer</text>
+    <text x="875" y="215" font-size="18">• build_prompt()</text>
+    <text x="875" y="250" font-size="18">• call_llm()</text>
+    <text x="875" y="285" font-size="18">• parse_output()</text>
+    <text x="875" y="320" font-size="18">• score_tests()</text>
+    <text x="875" y="355" font-size="18">• heal_test()</text>
+    <text x="875" y="390" font-size="18">• generate_github_workflow()</text>
+
+    <text x="1365" y="162" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a8a">Gemini API</text>
+    <text x="1275" y="220" font-size="18">• generate_content()</text>
+    <text x="1275" y="255" font-size="18">• returns text output</text>
+
+    <text x="635" y="572" text-anchor="middle" font-size="22" font-weight="700" fill="#166534">TestGenSession</text>
+    <text x="495" y="625" font-size="18">• id</text>
+    <text x="495" y="660" font-size="18">• input_type / test_mode</text>
+    <text x="495" y="695" font-size="18">• raw_input</text>
+    <text x="495" y="730" font-size="18">• generated_pytest</text>
+    <text x="495" y="765" font-size="18">• generated_junit / generated_jest</text>
+
+    <text x="1090" y="572" text-anchor="middle" font-size="22" font-weight="700" fill="#92400e">Request Models</text>
+    <text x="955" y="625" font-size="18">• GenerateRequestSerializer</text>
+    <text x="955" y="660" font-size="18">• HealRequestSerializer</text>
+    <text x="955" y="695" font-size="18">• CIExportRequestSerializer</text>
+  </g>
+
+  <g stroke="#475569" stroke-width="3" fill="none">
+    <line x1="380" y1="235" x2="470" y2="235"/>
+    <line x1="760" y1="245" x2="850" y2="245"/>
+    <line x1="1160" y1="225" x2="1250" y2="225"/>
+
+    <line x1="615" y1="360" x2="615" y2="540"/>
+    <line x1="900" y1="390" x2="790" y2="540"/>
+    <line x1="760" y1="330" x2="930" y2="610"/>
+  </g>
+  <g fill="#475569">
+    <polygon points="460,228 460,242 475,235"/>
+    <polygon points="840,238 840,252 855,245"/>
+    <polygon points="1240,218 1240,232 1255,225"/>
+    <polygon points="608,529 622,529 615,544"/>
+    <polygon points="783,530 795,538 785,546"/>
+    <polygon points="922,600 934,594 937,610"/>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="16" fill="#64748b">
+    <text x="402" y="220">HTTP / Axios</text>
+    <text x="784" y="230">delegates</text>
+    <text x="1188" y="210">LLM request</text>
+    <text x="628" y="455">stores sessions</text>
+    <text x="760" y="505">writes model data</text>
+    <text x="792" y="470">validates input</text>
+  </g>
+</svg>
