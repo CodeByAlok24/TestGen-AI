@@ -8,7 +8,6 @@ This project is especially useful for demos and academic presentations because i
 You can describe this project in one line as:
 
 > An AI-powered test generation platform with built-in security controls, MongoDB-backed history, gamification, and GitHub Actions-based DevSecOps checks.
-<<<<<<< HEAD
 =======
 
 ## ScreenShots 
@@ -18,7 +17,6 @@ You can describe this project in one line as:
 
 <img width="983" height="834" alt="Screenshot 2026-04-10 124929" src="https://github.com/user-attachments/assets/86990dcf-e40f-4e52-8735-5fef0a96f1d1" />
 
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
 
 ## Core Features
 
@@ -137,29 +135,6 @@ The backend sends headers like:
 - `Cross-Origin-Opener-Policy`
 - `Cross-Origin-Resource-Policy`
 
-<<<<<<< HEAD
-## DevSecOps Explanation for Demo
-
-If your sir asks, “Where is DevSecOps in this project?”, you can answer like this:
-
-### Dev
-
-Developers use the app to generate tests, heal tests, review quality, and export CI workflows.
-
-### Sec
-
-Security is integrated directly into the application and pipeline through auth protection, password hashing, headers, validation, rate limiting, dependency audits, and CodeQL scanning.
-
-### Ops
-
-GitHub Actions automatically checks the frontend and backend on push or pull request, which supports reliable delivery and safer changes.
-
-Short demo line:
-
-> We implemented DevSecOps by combining secure app development practices with automated CI checks and static security analysis in GitHub Actions.
-
-=======
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
 ## CI/CD and GitHub Actions
 
 This repository already contains GitHub Actions workflows.
@@ -205,26 +180,6 @@ Important note for demo:
 - GitHub Actions only runs on GitHub after the project is pushed to a GitHub repository
 - So the pipeline is ready, but GitHub-hosted execution requires the repo to exist online
 
-<<<<<<< HEAD
-## Do You Need a GitHub Repository?
-
-Yes, if you want to show GitHub Actions actually running in the GitHub UI, you should create a GitHub repository and push this project.
-
-Without a GitHub repository:
-
-- the workflow files exist locally
-- but the Actions tab and CodeQL results cannot be demonstrated on GitHub
-
-For your demo, the best approach is:
-
-1. Create a GitHub repository
-2. Push the project
-3. Open the `Actions` tab
-4. Show CI workflow runs
-5. Show CodeQL configuration if needed
-
-=======
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
 ## Environment Variables
 
 Create a root `.env` file.
@@ -318,51 +273,6 @@ MongoDB stores:
 
 Test session history also stores who generated the session, which is useful for demo traceability.
 
-<<<<<<< HEAD
-## Demo Flow You Can Present
-
-1. Show signup/login
-2. Show secure auth flow and mention JWT + bcrypt + rate limiting
-3. Generate tests from code or story
-4. Show quality scoring
-5. Show self-heal
-6. Show CI export
-7. Show MongoDB-backed session history
-8. Show trophies / XP / dashboard
-9. Explain GitHub Actions CI and CodeQL
-
-## What To Say in Front of Sir
-
-Use this short explanation:
-
-> This project is not only an AI test generator. It also demonstrates DevSecOps. We added password hashing, JWT-based auth, secure headers, rate limiting, CORS restrictions, validation, MongoDB-backed traceable history, npm audit in CI, and CodeQL security scanning. GitHub Actions automatically checks code quality and security on every push or pull request.
-
-## Demo Readiness Checklist
-
-Before demo, make sure:
-
-- backend starts successfully
-- frontend starts successfully
-- MongoDB is available
-- signup/login works
-- test generation works in mock or configured provider mode
-- history loads
-- GitHub repo exists if you want to show Actions UI
-- `.env` secrets are not committed publicly
-
-=======
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
 ## Important Security Note
 
 Do not commit real secrets from `.env` to GitHub. If any real keys or database URLs were exposed earlier, rotate them before publishing the repository.
-
-<<<<<<< HEAD
-## Team
-
-- Alok Kumar Das
-- Deependra Kumar Singh
-- Dharmendra Gora
-- Jyotinder Yadav
-=======
-
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
