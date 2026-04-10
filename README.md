@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-﻿# TestGen AI
-=======
 # TestGen AI
->>>>>>> d3783293c145c49f5eb8d2a738cfc1a0efbba5c1
-
 TestGen AI is a full-stack test automation platform that generates unit, integration, acceptance, and system test cases from code, API descriptions, and user stories. It also includes quality scoring, self-healing support, CI workflow export, gamification, user-linked history, and DevSecOps-focused security and CI checks.
 
 This project is especially useful for demos and academic presentations because it shows how AI-assisted testing, application security, and CI/CD practices can be combined in one product.
