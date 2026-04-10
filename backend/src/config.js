@@ -12,7 +12,6 @@ export const config = {
   port: Number(process.env.PORT || 8000),
   jwtSecret: process.env.JWT_SECRET || 'dev-jwt-secret',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  redisEnabled: process.env.REDIS_ENABLED !== 'false',
   otpTtlSeconds: Number(process.env.OTP_TTL_SECONDS || 300),
   authSessionTtlSeconds: Number(process.env.AUTH_SESSION_TTL_SECONDS || 604800),
   llmProvider: (process.env.LLM_PROVIDER || 'mock').toLowerCase(),
@@ -26,8 +25,6 @@ export const config = {
   groqApiKey: process.env.GROQ_API_KEY || '',
   groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
   groqTemperature: Number(process.env.GROQ_TEMPERATURE || 0.2),
-  databaseUrl:
-    process.env.DATABASE_URL ||
-    `postgresql://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || 'postgres'}@${process.env.POSTGRES_HOST || 'postgres'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'testgen'}`,
-  redisUrl: process.env.REDIS_URL || 'redis://redis:6379',
+  mongoUrl: process.env.MONGO_URL || 'mongodb://mongo:27017',
+  mongoDb: process.env.MONGO_DB || 'testgen',
 }

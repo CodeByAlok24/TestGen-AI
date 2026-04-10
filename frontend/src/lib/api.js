@@ -76,6 +76,11 @@ export async function exportCiWorkflow(payload) {
   return data
 }
 
+export async function getTestCaseHistory() {
+  const { data } = await API.get('/testcases/history/')
+  return data
+}
+
 export async function getGamificationProfile(userId) {
   const { data } = await API.get(`/gamification/user/${userId}`)
   return data

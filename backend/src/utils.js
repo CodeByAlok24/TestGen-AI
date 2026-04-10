@@ -31,3 +31,11 @@ export function buildCacheKey(payload) {
 export function generateOtpCode() {
   return String(crypto.randomInt(100000, 1000000))
 }
+
+export function normalizeUsername(value) {
+  return String(value || '').trim().toLowerCase()
+}
+
+export function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase()
+}

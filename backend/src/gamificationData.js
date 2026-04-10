@@ -1,6 +1,10 @@
 export const LEVEL_THRESHOLDS = [0, 100, 500, 1500, 3000, 6000, 11000, 18000, 27000, 40000]
 
 export const BADGE_DEFINITIONS = [
+  { id: 'xp-50', name: 'Launch Spark', icon: 'Zap', description: 'Reached 50 XP.', rarity: 'common' },
+  { id: 'xp-100', name: 'Orbital 100', icon: 'Rocket', description: 'Reached 100 XP.', rarity: 'uncommon' },
+  { id: 'xp-250', name: 'Deep Space 250', icon: 'Stars', description: 'Reached 250 XP.', rarity: 'rare' },
+  { id: 'xp-500', name: 'Galaxy 500', icon: 'Trophy', description: 'Reached 500 XP.', rarity: 'epic' },
   { id: 'first-test', name: 'First Test', icon: 'Sparkles', description: 'Generated your first test suite.', rarity: 'common' },
   { id: 'test-fifty', name: 'Test Fifty', icon: 'FlaskConical', description: 'Generated 50 test suites.', rarity: 'uncommon' },
   { id: 'test-century', name: 'Test Century', icon: 'Atom', description: 'Generated 100 test suites.', rarity: 'rare' },

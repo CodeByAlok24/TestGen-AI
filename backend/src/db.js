@@ -1,13 +1,42 @@
-import pg from 'pg'
+import { MongoClient, ObjectId } from 'mongodb'
 import { config } from './config.js'
 
-const { Pool } = pg
+let mongoClient = null
+let db = null
 
-export const pool = new Pool({
-  connectionString: config.databaseUrl,
-})
+export async function connectMongo() {
+  if (mongoClient) return db
 
-export async function query(text, params = []) {
-  const result = await pool.query(text, params)
-  return result
+  mongoClient = new MongoClient(config.mongoUrl)
+  await mongoClient.connect()
+  db = mongoClient.db(config.mongoDb)
+  
+  console.log('Connected to MongoDB')
+  return db
 }
+
+export function isMongoConnected() {
+  return db !== null
+}
+
+export function getDb() {
+  if (!db) {
+    throw new Error('MongoDB not connected. Call connectMongo() first.')
+  }
+  return db
+}
+
+export async function disconnectMongo() {
+  if (mongoClient) {
+    await mongoClient.close()
+    mongoClient = null
+    db = null
+  }
+}
+
+// Helper to convert MongoDB ObjectId to number-like ID for compatibility
+export function generateId() {
+  return new ObjectId().toString()
+}
+
+export { ObjectId }

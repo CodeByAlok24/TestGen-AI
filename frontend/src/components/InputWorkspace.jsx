@@ -1,20 +1,5 @@
-import { useRef, useState } from 'react'
+﻿import { useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
-import Card from './Card'
-import Button from './Button'
-
-const typeOptions = [
-  { id: 'code', label: 'Code' },
-  { id: 'api', label: 'API Endpoint' },
-  { id: 'story', label: 'User Story' },
-]
-
-const PLACEHOLDERS = {
-  code: '# Paste your code here or upload a file\ndef example():\n    pass\n',
-  api: 'GET https://api.example.com/users/{id}',
-  story:
-    'As a user, I want to reset my password so I can regain access to my account.',
-}
 
 const codeLanguages = [
   { id: 'python', label: 'Python' },
@@ -34,8 +19,83 @@ const testLevels = [
   { id: 'system', label: 'System' },
 ]
 
-const DEMO_CODE =
-  'def create_order(user_service, inventory_service, order_repo, user_id, item_id):\n    user = user_service.get_user(user_id)\n    item = inventory_service.get_item(item_id)\n\n    if not user or not item:\n        raise ValueError("invalid order")\n\n    order = {"user": user["id"], "item": item["id"]}\n    return order_repo.save(order)\n'
+const DEMO_CODE = `def create_order(user_service, inventory_service, order_repo, user_id, item_id):
+    user = user_service.get_user(user_id)
+    item = inventory_service.get_item(item_id)
+
+    if not user or not item:
+        raise ValueError("invalid order")
+
+    order = {"user": user["id"], "item": item["id"]}
+    return order_repo.save(order)
+`
+
+const s = {
+  card: {
+    background: 'linear-gradient(180deg, rgba(18,24,46,0.84), rgba(9,13,28,0.92))',
+    border: '1px solid rgba(138,180,255,0.18)',
+    borderRadius: 22,
+    padding: 20,
+    backdropFilter: 'blur(18px)',
+  },
+  label: {
+    fontSize: '0.65rem',
+    fontWeight: 800,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color: 'rgba(194,208,243,0.56)',
+    display: 'block',
+    marginBottom: 6,
+  },
+  chipRow: { display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 },
+  chip: (active) => ({
+    padding: '6px 12px',
+    borderRadius: 10,
+    cursor: 'pointer',
+    border: `1px solid ${active ? 'rgba(109,220,255,0.45)' : 'rgba(138,180,255,0.18)'}`,
+    background: active ? 'rgba(127,140,255,0.16)' : 'rgba(255,255,255,0.03)',
+    color: active ? '#eef4ff' : 'rgba(231,239,255,0.74)',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    transition: 'all 0.2s',
+  }),
+  outlineBtn: {
+    padding: '8px 14px',
+    borderRadius: 10,
+    border: '1px solid rgba(138,180,255,0.28)',
+    background: 'rgba(255,255,255,0.04)',
+    color: '#eef4ff',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  generateBtn: (disabled) => ({
+    padding: '11px 22px',
+    borderRadius: 12,
+    border: 'none',
+    background: disabled ? 'rgba(127,140,255,0.16)' : 'linear-gradient(90deg, #7f8cff, #6ddcff)',
+    color: disabled ? 'rgba(194,208,243,0.56)' : '#07101f',
+    fontWeight: 800,
+    fontSize: '0.85rem',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    transition: 'all 0.2s',
+    letterSpacing: '0.05em',
+    boxShadow: disabled ? 'none' : '0 10px 28px rgba(73,92,180,0.24)',
+  }),
+  select: {
+    background: 'rgba(8,11,24,0.88)',
+    border: '1px solid rgba(138,180,255,0.22)',
+    borderRadius: 10,
+    padding: '6px 10px',
+    color: '#eef4ff',
+    fontSize: '0.78rem',
+    cursor: 'pointer',
+    outline: 'none',
+  },
+}
 
 export default function InputWorkspace({ onGenerate, loading }) {
   const [type, setType] = useState('code')
@@ -45,175 +105,125 @@ export default function InputWorkspace({ onGenerate, loading }) {
   const [code, setCode] = useState(DEMO_CODE)
   const fileInputRef = useRef(null)
 
-  function handleTypeChange(newType) {
-    setType(newType)
-    setCode(newType === 'code' ? DEMO_CODE : '')
-  }
-
   function handleFileUpload(e) {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (evt) => {
-      setCode(evt.target?.result || '')
-    }
+    reader.onload = (evt) => setCode(evt.target?.result || '')
     reader.readAsText(file)
     e.target.value = ''
   }
 
   function buildRequestInput() {
     if (type !== 'code') return code
-    const label = codeLanguages.find((item) => item.id === language)?.label || language
+    const label = codeLanguages.find((l) => l.id === language)?.label || language
     return `Language: ${label}\n\n${code}`
   }
 
+  const lineCount = code.length > 0 ? code.split('\n').length : 0
+
   return (
-    <Card
-      title="Input"
-      subtitle="Choose the source, pick the test mode, then generate."
-      right={
-        <div className="inline-flex rounded-[18px] border border-[var(--border)] bg-[var(--panel-muted)] p-1 shadow-sm">
-          <button
-            className={`menu-chip ${mode === 'black_box' ? 'menu-chip--active' : ''}`}
-            onClick={() => setMode('black_box')}
-            type="button"
-          >
-            Black Box
-          </button>
-          <button
-            className={`menu-chip ${mode === 'white_box' ? 'menu-chip--active' : ''}`}
-            onClick={() => setMode('white_box')}
-            type="button"
-          >
-            White Box
-          </button>
+    <div style={s.card}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(138,180,255,0.12)' }}>
+        <div>
+          <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6ddcff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Input Workspace
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'rgba(231,239,255,0.74)', marginTop: 3 }}>Choose the source, pick the test mode, then generate.</div>
         </div>
-      }
-    >
-      <div className="mb-4 grid gap-3 lg:grid-cols-3">
-        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Current setup
-          </div>
-          <div className="mt-2 text-sm font-semibold text-[var(--text-strong)]">
-            {typeOptions.find((item) => item.id === type)?.label}
-          </div>
-        </div>
-        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Testing level
-          </div>
-          <div className="mt-2 text-sm font-semibold text-[var(--text-strong)]">
-            {testLevels.find((item) => item.id === testLevel)?.label}
-          </div>
-        </div>
-        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Perspective
-          </div>
-          <div className="mt-2 text-sm font-semibold text-[var(--text-strong)]">
-            {mode === 'black_box' ? 'Black Box' : 'White Box'}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-3">
-        {typeOptions.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => handleTypeChange(t.id)}
-            className={`menu-choice ${type === t.id ? 'menu-choice--active' : ''}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-4">
-        <div className="mb-2 text-sm font-medium text-[var(--muted)]">Testing level</div>
-        <div className="grid gap-3 md:grid-cols-4">
-          {testLevels.map((item) => (
+        <div style={{ display: 'flex', background: 'rgba(8,11,24,0.84)', border: '1px solid rgba(138,180,255,0.18)', borderRadius: 12, padding: 4, gap: 2 }}>
+          {[{ id: 'black_box', label: 'Black Box' }, { id: 'white_box', label: 'White Box' }].map((m) => (
             <button
-              key={item.id}
+              key={m.id}
               type="button"
-              onClick={() => setTestLevel(item.id)}
-              className={`menu-choice ${testLevel === item.id ? 'menu-choice--active' : ''}`}
+              onClick={() => setMode(m.id)}
+              style={{
+                padding: '5px 12px',
+                borderRadius: 8,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                background: mode === m.id ? 'linear-gradient(135deg, rgba(127,140,255,0.32), rgba(109,220,255,0.18))' : 'transparent',
+                color: mode === m.id ? '#eef4ff' : 'rgba(194,208,243,0.56)',
+                transition: 'all 0.2s',
+              }}
             >
-              {item.label}
+              {m.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        {type === 'code' ? (
-          <label className="inline-flex items-center gap-2 rounded-[16px] border border-[var(--border)] bg-[var(--panel)] px-3 py-2 text-sm text-[var(--text)]">
-            <span className="font-medium text-[var(--muted)]">Language</span>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-white px-2 py-1 text-sm text-[var(--text-strong)] outline-none"
-            >
-              {codeLanguages.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
+      <div style={{ marginBottom: 12 }}>
+        <span style={s.label}>Source Type</span>
+        <div style={s.chipRow}>
+          {[{ id: 'code', label: 'Code' }, { id: 'api', label: 'API' }, { id: 'story', label: 'Story' }].map((t) => (
+            <button key={t.id} type="button" onClick={() => { setType(t.id); setCode(t.id === 'code' ? DEMO_CODE : '') }} style={s.chip(type === t.id)}>{t.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <span style={s.label}>Test Level</span>
+        <div style={s.chipRow}>
+          {testLevels.map((l) => (
+            <button key={l.id} type="button" onClick={() => setTestLevel(l.id)} style={s.chip(testLevel === l.id)}>{l.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        {type === 'code' && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: '0.72rem', color: 'rgba(231,239,255,0.74)', fontWeight: 700 }}>Lang</span>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)} style={s.select}>
+              {codeLanguages.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
             </select>
           </label>
-        ) : null}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".py,.js,.ts,.jsx,.tsx,.java,.c,.cpp,.go,.rs,.rb,.txt,.json,.yaml,.yml,.md"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
-        <Button variant="soft" type="button" onClick={() => fileInputRef.current?.click()}>
+        )}
+        <input ref={fileInputRef} type="file" className="hidden" accept=".py,.js,.ts,.jsx,.tsx,.java,.c,.cpp,.go,.rs,.txt,.json,.yaml,.yml,.md" onChange={handleFileUpload} />
+        <button type="button" style={s.outlineBtn} onClick={() => fileInputRef.current?.click()}>
           Upload file
-        </Button>
-        <Button variant="ghost" type="button" onClick={() => setCode('')}>
+        </button>
+        <button type="button" style={{ ...s.outlineBtn, borderColor: 'rgba(255,143,216,0.28)', color: '#ff8fd8', background: 'rgba(255,143,216,0.08)' }} onClick={() => setCode('')}>
           Clear
-        </Button>
-        <span className="ml-auto text-xs text-[var(--muted)]">
-          {code.length > 0 ? `${code.split('\n').length} lines` : 'Editor is empty'}
+        </button>
+        <span style={{ marginLeft: 'auto', fontSize: '0.68rem', color: 'rgba(194,208,243,0.56)' }}>
+          {lineCount > 0 ? `${lineCount} lines` : 'Editor empty'}
         </span>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--panel)] shadow-inner">
+      <div style={{ overflow: 'hidden', borderRadius: 16, border: '1px solid rgba(109,220,255,0.15)', background: 'rgba(0,0,0,0.5)', marginBottom: 14 }}>
         <Editor
-          height="360px"
+          height="320px"
           language={type === 'code' ? language : 'markdown'}
           value={code}
-          onChange={(value) => setCode(value ?? '')}
-          theme="light"
+          onChange={(v) => setCode(v ?? '')}
+          theme="vs-dark"
           options={{
             minimap: { enabled: false },
-            fontSize: 13,
-            fontFamily: 'JetBrains Mono, Consolas, monospace',
+            fontSize: 12,
+            fontFamily: 'Fira Code, Cascadia Code, JetBrains Mono, Consolas, monospace',
             scrollBeyondLastLine: false,
             wordWrap: 'on',
-            placeholder: PLACEHOLDERS[type],
             lineNumbersMinChars: 2,
-            padding: { top: 14 },
+            padding: { top: 12 },
+            renderLineHighlight: 'none',
           }}
         />
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-[var(--muted)]">
-          Output frameworks: <span className="font-medium text-[var(--text)]">Pytest</span>,{' '}
-          <span className="font-medium text-[var(--text)]">JUnit</span>,{' '}
-          <span className="font-medium text-[var(--text)]">Jest</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTop: '1px solid rgba(109,220,255,0.1)' }}>
+        <div style={{ fontSize: '0.72rem', color: 'rgba(194,208,243,0.56)' }}>
+          Output: <span style={{ color: '#6ddcff' }}>Pytest</span> · <span style={{ color: '#f5c26b' }}>JUnit</span> · <span style={{ color: '#ff8fd8' }}>Jest</span>
         </div>
-        <Button
-          onClick={() => onGenerate(buildRequestInput(), type, mode, testLevel)}
-          disabled={loading || code.trim().length === 0}
-        >
-          {loading ? 'Generating...' : 'Generate tests'}
-        </Button>
+        <button type="button" style={s.generateBtn(loading || code.trim().length === 0)} disabled={loading || code.trim().length === 0} onClick={() => onGenerate(buildRequestInput(), type, mode, testLevel)}>
+          {loading ? 'Generating...' : 'Generate Tests'}
+        </button>
       </div>
-    </Card>
+    </div>
   )
 }

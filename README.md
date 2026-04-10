@@ -1,122 +1,265 @@
-# Agentica 2.0 - Team 24
+﻿# TestGen AI
 
-## AI-Powered Automatic Test Case Generator
+TestGen AI is a full-stack test automation platform that generates unit, integration, acceptance, and system test cases from code, API descriptions, and user stories. It also includes quality scoring, self-healing support, CI workflow export, gamification, user-linked history, and DevSecOps-focused security and CI checks.
 
-TestGen AI is a full-stack platform that generates automated test cases from:
+This project is especially useful for demos and academic presentations because it shows how AI-assisted testing, application security, and CI/CD practices can be combined in one product.
 
-- Source code
-- API endpoint descriptions
-- User stories / requirements
+## Demo Summary
 
-It also provides:
+You can describe this project in one line as:
 
-- Quality scoring for generated tests
-- Self-healing for failing tests
-- CI workflow export (GitHub Actions)
-- Login and signup support
-- Provider toggle between API-based LLM and local custom model
-
-## Why This Project
-
-Manual test writing is often repetitive, slow, and inconsistent. This project reduces manual effort and helps teams improve coverage and quality by producing structured tests quickly in multiple frameworks.
+> An AI-powered test generation platform with built-in security controls, MongoDB-backed history, gamification, and GitHub Actions-based DevSecOps checks.
 
 ## Core Features
 
-- Multi-input generation: code, API contract, or user story
-- Test modes: black-box and white-box
-- Test levels: unit, integration, acceptance, system
-- Output formats: Pytest, JUnit, Jest
-- Built-in quality scoring: coverage, edge cases, security, readability, overall
-- Self-heal panel to fix failing tests from test + error message
-- One-click CI export for generated tests
+- Generate tests from:
+  - source code
+  - API input
+  - user stories
+- Support multiple test levels:
+  - unit
+  - integration
+  - acceptance
+  - system
+- Export output in:
+  - Pytest
+  - JUnit
+  - Jest
+- Quality scoring for generated tests
+- Self-heal failing tests
+- Export GitHub Actions CI workflow YAML
+- Login, signup, and OTP-based auth flow
+- Gamified dashboard with XP, streaks, trophies, and history
+- MongoDB-backed test session history with generated-by user information
 
 ## Tech Stack
-
-### Backend
-
-- Node.js 20+
-- Express.js REST API
-- PostgreSQL for persistent storage
-- Redis for caching generated results
-- JWT authentication
-- LLM providers:
-  - Groq/OpenAI-compatible API mode
-  - Mock/local fallback mode for offline development
 
 ### Frontend
 
 - React 19
 - Vite
-- Tailwind CSS
 - Axios
+- Framer Motion
+- Recharts
 - Monaco Editor
+- Three.js / React Three Fiber packages available
 
-### DevOps
+### Backend
 
-- Docker + Docker Compose
-- Deployment targets: AWS or Vercel
-- Optional GitHub Actions workflow export
+- Node.js
+- Express
+- MongoDB
+- JWT authentication
+- bcrypt password hashing
+- Optional runtime cache layer
 
-## High-Level Architecture
+### DevSecOps
 
-`Frontend (React)` -> `Express REST API` -> `Redis Cache + PostgreSQL` -> `LLM Provider` -> `Generated Tests + Scores`
+- GitHub Actions CI workflow
+- CodeQL security analysis
+- npm audit in CI
+- Security headers
+- Rate limiting
+- CORS restrictions
+- Input validation and normalization
 
-### Main API endpoints
+## Real Architecture
 
-- `POST /api/generate/`
-- `POST /api/heal/`
-- `POST /api/ci-export/`
-- `GET /api/sessions/`
-- `POST /api/auth/signup/`
-- `POST /api/auth/login/`
+```text
+React Frontend
+   -> Express REST API
+   -> MongoDB for users, sessions, gamification, contributions
+   -> Optional cache/runtime stores
+   -> LLM provider or mock/local provider
+```
 
 ## Project Structure
 
 ```text
-team24/
+TestGen_AI/
+  .github/
+    workflows/
+      ci.yml
+      codeql.yml
   backend/
     src/
-    package.json
   frontend/
     src/
-    package.json
+  diagrams/
   docker-compose.yml
-  demo_samples.md
   README.md
 ```
 
-## Prerequisites
+## Authentication and Security
 
-Install the following before setup:
+This project already includes visible security controls that you can talk about during your demo.
 
-- Docker Desktop (for containerized run)
-- Node.js 20+ and npm (for local backend run)
-- Node.js 20+ and npm (for local frontend run)
+### Application Security Implemented
 
-## Option 1: Run End-to-End with Docker (Recommended)
+- Password hashing with `bcryptjs`
+- JWT-based authentication with signed session IDs
+- Session validation for protected routes
+- Rate limiting on auth endpoints
+- Secure HTTP headers via middleware
+- Content Security Policy
+- Restricted CORS origin handling
+- Username and email normalization before storage/comparison
+- Validation for signup input
+- Duplicate user prevention
+- Protected history and gamification APIs
 
-From the `team24` directory:
+### Files Where Security Was Added
+
+- [app.js](D:/Hackathon/TestGenAI-1/TestGen_AI/backend/src/app.js)
+- [middleware.js](D:/Hackathon/TestGenAI-1/TestGen_AI/backend/src/middleware.js)
+- [utils.js](D:/Hackathon/TestGenAI-1/TestGen_AI/backend/src/utils.js)
+- [store.js](D:/Hackathon/TestGenAI-1/TestGen_AI/backend/src/store.js)
+
+### Security Headers Added
+
+The backend sends headers like:
+
+- `Content-Security-Policy`
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: no-referrer`
+- `Permissions-Policy`
+- `Cross-Origin-Opener-Policy`
+- `Cross-Origin-Resource-Policy`
+
+## DevSecOps Explanation for Demo
+
+If your sir asks, “Where is DevSecOps in this project?”, you can answer like this:
+
+### Dev
+
+Developers use the app to generate tests, heal tests, review quality, and export CI workflows.
+
+### Sec
+
+Security is integrated directly into the application and pipeline through auth protection, password hashing, headers, validation, rate limiting, dependency audits, and CodeQL scanning.
+
+### Ops
+
+GitHub Actions automatically checks the frontend and backend on push or pull request, which supports reliable delivery and safer changes.
+
+Short demo line:
+
+> We implemented DevSecOps by combining secure app development practices with automated CI checks and static security analysis in GitHub Actions.
+
+## CI/CD and GitHub Actions
+
+This repository already contains GitHub Actions workflows.
+
+### Workflow Files
+
+- [ci.yml](D:/Hackathon/TestGenAI-1/TestGen_AI/.github/workflows/ci.yml)
+- [codeql.yml](D:/Hackathon/TestGenAI-1/TestGen_AI/.github/workflows/codeql.yml)
+
+### What CI Does
+
+The CI workflow runs:
+
+- frontend `npm ci`
+- frontend `npm audit --omit=dev --audit-level=high`
+- frontend `npm run lint`
+- frontend `npm run build`
+- backend `npm ci`
+- backend `npm audit --omit=dev --audit-level=high`
+- backend syntax validation using `node --check`
+
+### What CodeQL Does
+
+CodeQL performs static security analysis for JavaScript and runs on:
+
+- push
+- pull request
+- weekly schedule
+
+### Is CI/CD Working?
+
+Locally, the validation steps are working.
+
+Verified checks:
+
+- frontend lint passes
+- frontend build passes
+- backend syntax checks pass
+
+Important note for demo:
+
+- The workflows are correctly configured in the repository
+- GitHub Actions only runs on GitHub after the project is pushed to a GitHub repository
+- So the pipeline is ready, but GitHub-hosted execution requires the repo to exist online
+
+## Do You Need a GitHub Repository?
+
+Yes, if you want to show GitHub Actions actually running in the GitHub UI, you should create a GitHub repository and push this project.
+
+Without a GitHub repository:
+
+- the workflow files exist locally
+- but the Actions tab and CodeQL results cannot be demonstrated on GitHub
+
+For your demo, the best approach is:
+
+1. Create a GitHub repository
+2. Push the project
+3. Open the `Actions` tab
+4. Show CI workflow runs
+5. Show CodeQL configuration if needed
+
+## Environment Variables
+
+Create a root `.env` file.
+
+Example:
+
+```env
+PORT=8000
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=change-this-secret
+OTP_TTL_SECONDS=300
+AUTH_SESSION_TTL_SECONDS=604800
+
+LLM_PROVIDER=mock
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_TEMPERATURE=0.2
+GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_TEMPERATURE=0.2
+HUGGINGFACE_API_KEY=
+HUGGINGFACE_MODEL=meta-llama/Llama-3.1-70B-Instruct
+HUGGINGFACE_BASE_URL=https://router.huggingface.co/v1
+
+MONGO_URL=mongodb://localhost:27017
+MONGO_DB=testgen
+```
+
+Frontend optional env:
+
+```env
+VITE_API_BASE=http://localhost:8000/api
+```
+
+## Local Run Instructions
+
+### Option 1: Run with Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
-Services started:
+This starts:
 
-- PostgreSQL: `localhost:5432`
-- Redis: `localhost:6379`
-- Express backend: `http://localhost:8000`
-- React frontend: `http://localhost:5173`
+- MongoDB
+- Backend on `http://localhost:8000`
+- Frontend on `http://localhost:5173`
 
-Stop all services:
+### Option 2: Run Backend and Frontend Separately
 
-```bash
-docker compose down
-```
-
-## Option 2: Run Locally Without Docker
-
-### 1) Backend setup
+Backend:
 
 ```bash
 cd backend
@@ -124,111 +267,79 @@ npm install
 npm run dev
 ```
 
-The backend expects PostgreSQL and Redis to be running locally, or available through the environment variables below.
-
-### 2) Frontend setup
-
-Open a new terminal:
+Frontend:
 
 ```bash
 cd frontend
 npm install
-npm run dev -- --host 0.0.0.0 --port 5173
+npm run dev
 ```
 
-Frontend default API base is `http://localhost:8000/api`.
+## Main API Endpoints
 
-## Environment Variables
+- `POST /api/auth/signup/`
+- `POST /api/auth/login/`
+- `POST /api/auth/request-otp/`
+- `POST /api/auth/verify-otp/`
+- `GET /health`
+- `POST /api/generate/`
+- `POST /api/heal/`
+- `POST /api/ci-export/`
+- `GET /api/testcases/history/`
+- `GET /api/gamification/user/:userId`
+- `GET /api/challenges/daily`
+- `GET /api/challenges/weekly`
 
-### Backend
+## Database Usage
 
-You can use a `.env` file with these keys:
+MongoDB stores:
 
-```env
-PORT=8000
-CLIENT_URL=http://localhost:5173
-JWT_SECRET=dev-jwt-secret
+- users
+- generated test sessions
+- gamification progress
+- contribution data
+- leaderboard-related records
 
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=testgen
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/testgen
+Test session history also stores who generated the session, which is useful for demo traceability.
 
-REDIS_URL=redis://localhost:6379
+## Demo Flow You Can Present
 
-# valid values: mock, api, openai, groq, local
-LLM_PROVIDER=mock
+1. Show signup/login
+2. Show secure auth flow and mention JWT + bcrypt + rate limiting
+3. Generate tests from code or story
+4. Show quality scoring
+5. Show self-heal
+6. Show CI export
+7. Show MongoDB-backed session history
+8. Show trophies / XP / dashboard
+9. Explain GitHub Actions CI and CodeQL
 
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
-OPENAI_TEMPERATURE=0.2
+## What To Say in Front of Sir
 
-GROQ_API_KEY=
-GROQ_MODEL=llama-3.3-70b-versatile
-GROQ_TEMPERATURE=0.2
-```
+Use this short explanation:
 
-### Frontend
+> This project is not only an AI test generator. It also demonstrates DevSecOps. We added password hashing, JWT-based auth, secure headers, rate limiting, CORS restrictions, validation, MongoDB-backed traceable history, npm audit in CI, and CodeQL security scanning. GitHub Actions automatically checks code quality and security on every push or pull request.
 
-Optional `.env` in `frontend/`:
+## Demo Readiness Checklist
 
-```env
-VITE_API_BASE=http://localhost:8000/api
-```
+Before demo, make sure:
 
-## End-to-End User Flow
+- backend starts successfully
+- frontend starts successfully
+- MongoDB is available
+- signup/login works
+- test generation works in mock or configured provider mode
+- history loads
+- GitHub repo exists if you want to show Actions UI
+- `.env` secrets are not committed publicly
 
-1. Start backend and frontend.
-2. Open frontend at `http://localhost:5173`.
-3. Sign up, then log in.
-4. In Generate view:
-   - Choose input type (`code`, `api`, or `story`)
-   - Choose mode (`black_box` or `white_box`)
-   - Choose test level
-   - Select provider (`API` or `Custom Trained Model`)
-   - Generate tests
-5. Review generated outputs in Pytest/JUnit/Jest tabs.
-6. Open Quality view to inspect score and suggestions.
-7. Open Self-Heal view to repair a failing test.
-8. Open CI Export view to generate GitHub Actions workflow YAML.
+## Important Security Note
 
-## Demo Inputs
-
-Use the sample scenarios in `demo_samples.md` for quick validation of:
-
-- Generation across levels and languages
-- Provider toggle testing
-- Self-heal behavior
-- CI export behavior
-
-## Deployment Notes
-
-- Frontend can be deployed to Vercel.
-- Backend can be containerized with Docker and deployed to AWS services such as ECS, App Runner, or EC2.
-- PostgreSQL and Redis can be hosted with managed cloud services.
-
-## Troubleshooting
-
-- Backend fails to connect to PostgreSQL:
-  - Verify `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, or `DATABASE_URL`.
-- Backend fails to connect to Redis:
-  - Verify `REDIS_URL`.
-- API calls fail from frontend:
-  - Confirm backend is running at `http://localhost:8000`.
-  - Verify `VITE_API_BASE`.
-- LLM provider errors:
-  - Check API key presence for selected provider.
-  - `local` currently behaves as a safe fallback mode inside the Node backend.
+Do not commit real secrets from `.env` to GitHub. If any real keys or database URLs were exposed earlier, rotate them before publishing the repository.
 
 ## Team
 
-- Leader: Alok Kumar Das
+- Alok Kumar Das
 - Deependra Kumar Singh
 - Dharmendra Gora
 - Jyotinder Yadav
-
-
-
-

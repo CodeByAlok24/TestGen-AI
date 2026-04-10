@@ -1,156 +1,157 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { signup } from '../lib/api'
+﻿import { useState } from "react"
+import { Link } from "react-router-dom"
+import { signup } from "../lib/api"
+import NatureBackground from "./NatureBackground"
+
+const navItems = ["Home", "About", "Platform", "Docs"]
 
 export default function SignupScreen({ onAuth }) {
-  const [form, setForm] = useState({ username: '', email: '', password: '' })
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const [form, setForm] = useState({ username: "", email: "", password: "" })
+  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setMessage('')
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setError("")
+    setMessage("")
 
     if (!form.username || !form.email || !form.password) {
-      setError('Please fill in all fields.')
+      setError("Please fill in all fields.")
       return
     }
 
     if (form.password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError("Password must be at least 6 characters.")
       return
     }
 
     setLoading(true)
     try {
-      setMessage('Creating your workspace and preparing your starter profile...')
+      setMessage("Creating your workspace...")
       const user = await signup(form)
       onAuth(user)
     } catch (err) {
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.detail ||
-        'Signup failed. Please try again.'
-      setError(msg)
+      setMessage("")
+      if (!err?.response) {
+        setError("Backend server is not reachable. Please start the backend on port 8000 and try again.")
+        return
+      }
+      setError(err?.response?.data?.error || err?.response?.data?.detail || "Signup failed. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="auth-shell">
-      <div className="auth-layout">
-        <div className="auth-copy">
-          <div className="auth-kicker">TestGen AI</div>
-          <h1 className="auth-hero-title font-heading">
-            Start with a cleaner way to generate, review, and improve tests.
-          </h1>
-          <p className="auth-hero-text">
-            Create your account to unlock the workspace, progress tracking, and an easier
-            path from raw code to ready-to-run test cases.
-          </p>
+    <div className="marketing-auth-shell">
+      <NatureBackground variant="auth" />
 
-          <div className="auth-feature-grid">
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">01</div>
-              <div>
-                <div className="auth-feature-title">Create an account</div>
-                <div className="auth-feature-text">A lightweight setup that gets you into the product quickly.</div>
-              </div>
-            </div>
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">02</div>
-              <div>
-                <div className="auth-feature-title">Paste a snippet</div>
-                <div className="auth-feature-text">Choose framework, testing level, and generation mode in one place.</div>
-              </div>
-            </div>
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">03</div>
-              <div>
-                <div className="auth-feature-title">Grow with usage</div>
-                <div className="auth-feature-text">Collect badges, finish challenges, and keep your momentum visible.</div>
-              </div>
-            </div>
+      <div className="marketing-auth-topbar">
+        <div className="marketing-auth-brand">
+          <div className="marketing-auth-brand-mark">
+            <span className="accent">TESTGEN</span> AI
           </div>
         </div>
 
-        <div className="auth-card">
-          <div className="auth-header">
-            <div className="auth-header-badge">New workspace</div>
-            <h2 className="auth-title">Create account</h2>
-            <p className="auth-subtitle">A few details now, then you can jump straight into generation.</p>
-          </div>
+        <div className="marketing-auth-nav" aria-hidden="true">
+          {navItems.map((item) => (
+            <a key={item} href="#">
+              {item}
+            </a>
+          ))}
+        </div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error ? <div className="auth-error">{error}</div> : null}
-            {message ? <div className="auth-success">{message}</div> : null}
-
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="signup-username">
-                Username
-              </label>
-              <input
-                id="signup-username"
-                className="auth-input"
-                type="text"
-                placeholder="Choose a username"
-                value={form.username}
-                onChange={(e) => update('username', e.target.value)}
-                autoComplete="username"
-              />
-            </div>
-
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="signup-email">
-                Email
-              </label>
-              <input
-                id="signup-email"
-                className="auth-input"
-                type="email"
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={(e) => update('email', e.target.value)}
-                autoComplete="email"
-              />
-            </div>
-
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="signup-password">
-                Password
-              </label>
-              <input
-                id="signup-password"
-                className="auth-input"
-                type="password"
-                placeholder="Min 6 characters"
-                value={form.password}
-                onChange={(e) => update('password', e.target.value)}
-                autoComplete="new-password"
-              />
-              <div className="auth-footnote">Use at least 6 characters so your account is ready for secure login.</div>
-            </div>
-
-            <button className="auth-btn" type="submit" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create account'}
-            </button>
-          </form>
-
-          <p className="auth-footer">
-            Already have an account?{' '}
-            <Link to="/login" className="auth-link">
-              Sign in
-            </Link>
-          </p>
+        <div className="marketing-auth-menu">
+          <button type="button" className="marketing-auth-menuBtn">
+            Mission Setup
+          </button>
         </div>
       </div>
+
+      <div className="marketing-auth-frameWrap">
+        <div className="marketing-auth-frame">
+          <div className="marketing-auth-hero">
+            <div className="orbit-ring" />
+            <div className="orbit-ring alt" />
+            <div className="orbit-ring inner" />
+            <div className="orbit-sphere main" />
+            <div className="orbit-sphere side" />
+            <div className="orbit-sphere small" />
+
+            <div className="orbit-card left">
+              <div className="orbit-label">Workspace Seed</div>
+              <div className="orbit-copy">Create a secure account and unlock generation history, quality insights, and workflow export.</div>
+              <div className="orbit-pill">Start build</div>
+            </div>
+
+            <div className="orbit-card right">
+              <div className="orbit-label">Delivery Ready</div>
+              <div className="orbit-copy">Bring code, story, and API-driven testing into a single real product experience.</div>
+            </div>
+
+            <div className="hero-content">
+              <div className="marketing-auth-kicker">Cinematic onboarding shell</div>
+              <h1 className="marketing-auth-title">
+                Build <span>Station</span>
+              </h1>
+              <p className="marketing-auth-copy">
+                Create an account inside a premium control interface designed for real QA workflows, not a generic AI demo screen.
+              </p>
+              <div className="marketing-auth-bullets">
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Centralize test generation, repair, metrics, and CI exports.
+                </div>
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Keep a visible user-linked history of generated test sessions.
+                </div>
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Start with a UI that feels like a product landing environment.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="marketing-auth-card">
+            <div className="marketing-auth-cardHeader">
+              <h2 className="marketing-auth-cardTitle">Create Account</h2>
+              <p className="marketing-auth-cardSub">Open a new workspace and enter the testing control station.</p>
+            </div>
+
+            {error && <div className="auth-error" role="alert">{error}</div>}
+            {message && <div className="auth-message" role="status">{message}</div>}
+
+            <form onSubmit={handleSubmit} className="marketing-auth-form">
+              <Field label="Username" id="signup-username" type="text" placeholder="Choose a username" value={form.username} onChange={(event) => update("username", event.target.value)} auto="username" />
+              <Field label="Email" id="signup-email" type="email" placeholder="you@example.com" value={form.email} onChange={(event) => update("email", event.target.value)} auto="email" />
+              <Field label="Password" id="signup-password" type="password" placeholder="Minimum 6 characters" value={form.password} onChange={(event) => update("password", event.target.value)} auto="new-password" />
+              <button type="submit" disabled={loading} className="auth-btn">
+                {loading ? "Creating account..." : "Create Station"}
+              </button>
+            </form>
+
+            <p className="marketing-auth-footer">
+              Already have access? <Link to="/login" className="auth-link purple">Sign in</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, id, type, placeholder, value, onChange, auto }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <label htmlFor={id} className="auth-label">{label}</label>
+      <input id={id} type={type} placeholder={placeholder} value={value} onChange={onChange} autoComplete={auto} className="auth-input" />
     </div>
   )
 }

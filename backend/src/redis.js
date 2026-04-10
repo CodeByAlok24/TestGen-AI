@@ -1,71 +1,83 @@
-import { createClient } from 'redis'
-import { config } from './config.js'
+import { getDb } from './db.js'
 
-export const redis = createClient({
-  url: config.redisUrl,
-  socket: {
-    connectTimeout: 1500,
-    reconnectStrategy: false,
-  },
-})
+// MongoDB cache collection for Redis-like operations
+const CACHE_COLLECTION = 'cache'
+let cacheReady = false
 
-let redisAvailable = false
-let redisErrorLogged = false
-
-redis.on('error', (error) => {
-  if (!redisErrorLogged) {
-    console.warn(`Redis disabled for this run: ${error?.message || 'Unknown Redis error'}`)
-    redisErrorLogged = true
-  }
-})
-
-export async function connectRedis() {
-  if (!config.redisEnabled) {
-    redisAvailable = false
-    console.log('Redis disabled by configuration.')
-    return
-  }
-
-  if (!redis.isOpen) {
-    try {
-      await redis.connect()
-      redisAvailable = true
-    } catch (error) {
-      redisAvailable = false
-      if (!redisErrorLogged) {
-        console.warn(`Redis unavailable, continuing without cache: ${error?.message || 'Unknown Redis error'}`)
-        redisErrorLogged = true
-      }
-    }
+export async function initializeCache() {
+  try {
+    const db = getDb()
+    const collection = db.collection(CACHE_COLLECTION)
+    
+    // Create TTL index for automatic expiration
+    await collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
+    
+    cacheReady = true
+    console.log('Cache collection initialized')
+  } catch (error) {
+    console.warn(`Cache initialization failed: ${error?.message || 'Unknown error'}`)
   }
 }
 
 export function isRedisAvailable() {
-  return redisAvailable && redis.isOpen
+  return cacheReady
 }
 
 export async function setRedisJson(key, value, ttlSeconds) {
-  if (!isRedisAvailable()) return false
+  if (!cacheReady) return false
 
-  await redis.set(key, JSON.stringify(value), ttlSeconds ? { EX: ttlSeconds } : undefined)
-  return true
+  try {
+    const db = getDb()
+    const collection = db.collection(CACHE_COLLECTION)
+    
+    const expiresAt = ttlSeconds 
+      ? new Date(Date.now() + ttlSeconds * 1000)
+      : new Date(Date.now() + 366 * 24 * 60 * 60 * 1000) // default 1 year
+    
+    await collection.updateOne(
+      { _id: key },
+      {
+        $set: {
+          _id: key,
+          value: value,
+          expiresAt: expiresAt,
+        },
+      },
+      { upsert: true }
+    )
+    return true
+  } catch (error) {
+    console.warn(`Cache set error: ${error?.message || 'Unknown error'}`)
+    return false
+  }
 }
 
 export async function getRedisJson(key) {
-  if (!isRedisAvailable()) return null
-
-  const raw = await redis.get(key)
-  if (!raw) return null
+  if (!cacheReady) return null
 
   try {
-    return JSON.parse(raw)
-  } catch {
+    const db = getDb()
+    const collection = db.collection(CACHE_COLLECTION)
+    
+    const doc = await collection.findOne({ _id: key })
+    return doc?.value || null
+  } catch (error) {
+    console.warn(`Cache get error: ${error?.message || 'Unknown error'}`)
     return null
   }
 }
 
 export async function deleteRedisKey(key) {
-  if (!isRedisAvailable()) return false
-  await redis.del(key)
-  return true
+  if (!cacheReady) return false
+
+  try {
+    const db = getDb()
+    const collection = db.collection(CACHE_COLLECTION)
+    
+    const result = await collection.deleteOne({ _id: key })
+    return result.deletedCount > 0
+  } catch (error) {
+    console.warn(`Cache delete error: ${error?.message || 'Unknown error'}`)
+    return false
+  }
 }

@@ -127,7 +127,12 @@ function unlockBadge(profile, badgeId, output) {
 
 function checkBadgeUnlocks(profile, action, metadata) {
   const unlocked = []
+  const totalXP = profile.totalXPEarned ?? 0
   const totalGenerated = profile.stats.totalTestsGenerated
+  if (totalXP >= 50) unlockBadge(profile, 'xp-50', unlocked)
+  if (totalXP >= 100) unlockBadge(profile, 'xp-100', unlocked)
+  if (totalXP >= 250) unlockBadge(profile, 'xp-250', unlocked)
+  if (totalXP >= 500) unlockBadge(profile, 'xp-500', unlocked)
   if (totalGenerated >= 1) unlockBadge(profile, 'first-test', unlocked)
   if (totalGenerated >= 50) unlockBadge(profile, 'test-fifty', unlocked)
   if (totalGenerated >= 100) unlockBadge(profile, 'test-century', unlocked)

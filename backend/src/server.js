@@ -1,30 +1,29 @@
 import app from './app.js'
 import { config } from './config.js'
-import { pool } from './db.js'
-import { connectRedis } from './redis.js'
+import { connectMongo } from './db.js'
+import { initializeCache } from './redis.js'
 import { ensureSchema } from './schema.js'
-import { configureStore } from './store.js'
 
 async function start() {
-  let databaseAvailable = false
-
   try {
-    await pool.query('SELECT 1')
+    // Connect to MongoDB
+    await connectMongo()
+    console.log('Connected to MongoDB')
+    
+    // Initialize schema and indexes
     await ensureSchema()
-    databaseAvailable = true
+    
+    // Initialize cache layer
+    await initializeCache()
+    
+    // Start the server
+    app.listen(config.port, () => {
+      console.log(`Backend listening on port ${config.port}`)
+    })
   } catch (error) {
-    console.warn(`PostgreSQL unavailable, continuing with in-memory store: ${error.message}`)
+    console.error('Failed to start backend:', error)
+    process.exit(1)
   }
-
-  configureStore({ databaseAvailable, query: pool.query.bind(pool) })
-  await connectRedis()
-
-  app.listen(config.port, () => {
-    console.log(`Backend listening on port ${config.port}`)
-  })
 }
 
-start().catch((error) => {
-  console.error('Failed to start backend:', error)
-  process.exit(1)
-})
+start()

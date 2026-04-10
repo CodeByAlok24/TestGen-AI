@@ -1,66 +1,80 @@
-import { comparePassword, hashPassword } from './utils.js'
+import { getDb, ObjectId } from './db.js'
+import { comparePassword, hashPassword, normalizeEmail, normalizeUsername } from './utils.js'
 
 let users = []
 let sessions = []
 let userIdCounter = 1
 let sessionIdCounter = 1
-let databaseEnabled = false
-let queryImpl = null
-
-export function configureStore({ databaseAvailable, query }) {
-  databaseEnabled = databaseAvailable
-  queryImpl = query
-}
+let databaseEnabled = true
 
 export function isDatabaseEnabled() {
   return databaseEnabled
 }
 
 export async function findUserByUsername(username) {
-  if (databaseEnabled) {
-    const result = await queryImpl(
-      'SELECT id, username, email, password_hash FROM users WHERE username = $1 LIMIT 1',
-      [username],
-    )
-    return result.rows[0] || null
-  }
+  const db = getDb()
+  const usersCollection = db.collection('users')
 
-  return users.find((user) => user.username === username) || null
+  const normalizedUsername = normalizeUsername(username)
+  const user = await usersCollection.findOne({
+    $or: [{ username_normalized: normalizedUsername }, { username }],
+  })
+  if (user) {
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      password_hash: user.password_hash,
+    }
+  }
+  return null
 }
 
 export async function findUserByUsernameOrEmail(username, email) {
-  if (databaseEnabled) {
-    const result = await queryImpl(
-      'SELECT id FROM users WHERE username = $1 OR email = $2 LIMIT 1',
-      [username, email],
-    )
-    return result.rows[0] || null
-  }
+  const db = getDb()
+  const usersCollection = db.collection('users')
 
-  return users.find((user) => user.username === username || user.email === email) || null
+  const normalizedUsername = normalizeUsername(username)
+  const normalizedEmail = normalizeEmail(email)
+  const user = await usersCollection.findOne({
+    $or: [
+      { username_normalized: normalizedUsername },
+      { email_normalized: normalizedEmail },
+      { username },
+      { email },
+    ],
+  })
+  if (user) {
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+    }
+  }
+  return null
 }
 
 export async function createUser({ username, email, password }) {
   const passwordHash = await hashPassword(password)
+  const db = getDb()
+  const usersCollection = db.collection('users')
+  const trimmedUsername = String(username).trim()
+  const trimmedEmail = String(email).trim()
 
-  if (databaseEnabled) {
-    const result = await queryImpl(
-      `INSERT INTO users (username, email, password_hash)
-       VALUES ($1, $2, $3)
-       RETURNING id, username, email`,
-      [username, email, passwordHash],
-    )
-    return result.rows[0]
-  }
-
-  const user = {
-    id: userIdCounter++,
-    username,
-    email,
+  const result = await usersCollection.insertOne({
+    username: trimmedUsername,
+    username_normalized: normalizeUsername(trimmedUsername),
+    email: trimmedEmail,
+    email_normalized: normalizeEmail(trimmedEmail),
     password_hash: passwordHash,
+    created_at: new Date(),
+  })
+
+  return {
+    id: result.insertedId.toString(),
+    username: trimmedUsername,
+    email: trimmedEmail,
   }
-  users.push(user)
-  return { id: user.id, username: user.username, email: user.email }
 }
 
 export async function validateUser(username, password) {
@@ -74,30 +88,10 @@ export async function validateUser(username, password) {
 }
 
 export async function createSession(session) {
-  if (databaseEnabled) {
-    const result = await queryImpl(
-      `INSERT INTO testgen_sessions
-       (user_id, input_type, test_mode, raw_input, provider, generated_pytest, generated_junit, generated_jest, scores, quality_score)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10)
-       RETURNING id`,
-      [
-        session.userId,
-        session.inputType,
-        session.testMode,
-        session.rawInput,
-        session.provider,
-        session.tests.pytest,
-        session.tests.junit,
-        session.tests.jest,
-        JSON.stringify(session.scores),
-        session.scores.overall,
-      ],
-    )
-    return { id: result.rows[0].id }
-  }
+  const db = getDb()
+  const sessionsCollection = db.collection('testgen_sessions')
 
-  const record = {
-    id: sessionIdCounter++,
+  const result = await sessionsCollection.insertOne({
     user_id: session.userId,
     input_type: session.inputType,
     test_mode: session.testMode,
@@ -106,37 +100,41 @@ export async function createSession(session) {
     generated_pytest: session.tests.pytest,
     generated_junit: session.tests.junit,
     generated_jest: session.tests.jest,
+    generated_by_username: session.username,
+    generated_by_email: session.email,
     scores: session.scores,
     quality_score: session.scores.overall,
-    created_at: new Date().toISOString(),
-  }
-  sessions.unshift(record)
-  return { id: record.id }
+    created_at: new Date(),
+  })
+
+  return { id: result.insertedId.toString() }
 }
 
 export async function listSessionsByUser(userId) {
-  if (databaseEnabled) {
-    const result = await queryImpl(
-      `SELECT id, input_type, test_mode, provider, quality_score, scores, created_at
-       FROM testgen_sessions
-       WHERE user_id = $1
-       ORDER BY created_at DESC
-       LIMIT 20`,
-      [userId],
-    )
-    return result.rows
-  }
+  const db = getDb()
+  const sessionsCollection = db.collection('testgen_sessions')
 
-  return sessions
-    .filter((session) => String(session.user_id) === String(userId))
-    .slice(0, 20)
-    .map(({ id, input_type, test_mode, provider, quality_score, scores, created_at }) => ({
-      id,
-      input_type,
-      test_mode,
-      provider,
-      quality_score,
-      scores,
-      created_at,
-    }))
+  const sessions = await sessionsCollection
+    .find({ user_id: userId })
+    .sort({ created_at: -1 })
+    .limit(20)
+    .toArray()
+
+  return sessions.map((session) => ({
+    id: session._id.toString(),
+    input_type: session.input_type,
+    test_mode: session.test_mode,
+    raw_input: session.raw_input,
+    provider: session.provider,
+    generated_pytest: session.generated_pytest,
+    generated_junit: session.generated_junit,
+    generated_jest: session.generated_jest,
+    generated_by: {
+      username: session.generated_by_username || 'unknown',
+      email: session.generated_by_email || '',
+    },
+    quality_score: session.quality_score,
+    scores: session.scores,
+    created_at: session.created_at,
+  }))
 }

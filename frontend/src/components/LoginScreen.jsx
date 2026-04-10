@@ -1,13 +1,16 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { login, requestOtp, verifyOtp } from '../lib/api'
+﻿import { useState } from "react"
+import { Link } from "react-router-dom"
+import { login, requestOtp, verifyOtp } from "../lib/api"
+import NatureBackground from "./NatureBackground"
+
+const navItems = ["Home", "About", "Platform", "Docs"]
 
 export default function LoginScreen({ onAuth }) {
-  const [form, setForm] = useState({ username: '', password: '' })
-  const [otpState, setOtpState] = useState({ username: '', otp: '', otpPreview: '', sent: false })
-  const [mode, setMode] = useState('password')
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const [form, setForm] = useState({ username: "", password: "" })
+  const [otpState, setOtpState] = useState({ username: "", otp: "", otpPreview: "", sent: false })
+  const [mode, setMode] = useState("password")
+  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
 
   function update(field, value) {
@@ -18,17 +21,17 @@ export default function LoginScreen({ onAuth }) {
     setOtpState((prev) => ({ ...prev, [field]: value }))
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setMessage('')
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setError("")
+    setMessage("")
 
-    if (mode === 'otp') {
+    if (mode === "otp") {
       return handleVerifyOtp()
     }
 
     if (!form.username || !form.password) {
-      setError('Please fill in all fields.')
+      setError("Please fill in all fields.")
       return
     }
 
@@ -37,40 +40,27 @@ export default function LoginScreen({ onAuth }) {
       const user = await login(form)
       onAuth(user)
     } catch (err) {
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.detail ||
-        'Login failed. Please try again.'
-      setError(msg)
+      setError(err?.response?.data?.error || err?.response?.data?.detail || "Login failed. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
   async function handleRequestOtp() {
-    setError('')
-    setMessage('')
-
+    setError("")
+    setMessage("")
     if (!otpState.username) {
-      setError('Enter your username to request an OTP.')
+      setError("Enter your username to request an OTP.")
       return
     }
 
     setLoading(true)
     try {
       const data = await requestOtp({ username: otpState.username })
-      setOtpState((prev) => ({
-        ...prev,
-        sent: true,
-        otpPreview: data.otp || '',
-      }))
-      setMessage('OTP generated successfully.')
+      setOtpState((prev) => ({ ...prev, sent: true, otpPreview: data.otp || "" }))
+      setMessage("One-time access code generated.")
     } catch (err) {
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.detail ||
-        'Could not generate OTP.'
-      setError(msg)
+      setError(err?.response?.data?.error || err?.response?.data?.detail || "Could not generate OTP.")
     } finally {
       setLoading(false)
     }
@@ -78,7 +68,7 @@ export default function LoginScreen({ onAuth }) {
 
   async function handleVerifyOtp() {
     if (!otpState.username || !otpState.otp) {
-      setError('Enter your username and OTP.')
+      setError("Enter your username and OTP.")
       return
     }
 
@@ -87,217 +77,164 @@ export default function LoginScreen({ onAuth }) {
       const user = await verifyOtp({ username: otpState.username, otp: otpState.otp })
       onAuth(user)
     } catch (err) {
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.detail ||
-        'OTP verification failed.'
-      setError(msg)
+      setError(err?.response?.data?.error || err?.response?.data?.detail || "OTP verification failed.")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="auth-shell">
-      <div className="auth-layout">
-        <div className="auth-copy">
-          <div className="auth-kicker">TestGen AI</div>
-          <h1 className="auth-hero-title font-heading">
-            Build tests faster, with a workspace that feels friendly from the first click.
-          </h1>
-          <p className="auth-hero-text">
-            Sign in to generate test cases, track your streaks, unlock badges, and keep your
-            QA workflow moving without the usual clutter.
-          </p>
+    <div className="marketing-auth-shell">
+      <NatureBackground variant="auth" />
 
-          <div className="auth-feature-grid">
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">AI</div>
-              <div>
-                <div className="auth-feature-title">Code to tests</div>
-                <div className="auth-feature-text">Turn snippets into clean unit and integration tests.</div>
-              </div>
-            </div>
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">XP</div>
-              <div>
-                <div className="auth-feature-title">Visible progress</div>
-                <div className="auth-feature-text">Earn XP, keep streaks alive, and watch challenges complete.</div>
-              </div>
-            </div>
-            <div className="auth-feature-card">
-              <div className="auth-feature-icon">OTP</div>
-              <div>
-                <div className="auth-feature-title">Quick access</div>
-                <div className="auth-feature-text">Jump in with password or OTP depending on what feels easiest.</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="auth-trust-row">
-            <span>Clean workspace</span>
-            <span>Fast generation</span>
-            <span>Friendly flows</span>
+      <div className="marketing-auth-topbar">
+        <div className="marketing-auth-brand">
+          <div className="marketing-auth-brand-mark">
+            <span className="accent">TESTGEN</span> AI
           </div>
         </div>
 
-        <div className="auth-card">
-          <div className="auth-header">
-            <div className="auth-header-badge">Welcome back</div>
-            <h2 className="auth-title">Sign in</h2>
-            <p className="auth-subtitle">Pick the easiest way to get back into your testing workspace.</p>
-          </div>
+        <div className="marketing-auth-nav" aria-hidden="true">
+          {navItems.map((item) => (
+            <a key={item} href="#">
+              {item}
+            </a>
+          ))}
+        </div>
 
-          <div className="auth-toggle">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('password')
-                setError('')
-                setMessage('')
-              }}
-              className={`menu-chip flex-1 ${mode === 'password' ? 'menu-chip--active' : ''}`}
-            >
-              Password login
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('otp')
-                setError('')
-                setMessage('')
-              }}
-              className={`menu-chip flex-1 ${mode === 'otp' ? 'menu-chip--active' : ''}`}
-            >
-              OTP login
-            </button>
-          </div>
+        <div className="marketing-auth-menu">
+          <button type="button" className="marketing-auth-menuBtn">
+            Orbit Access
+          </button>
+        </div>
+      </div>
 
-          <div className="auth-helper">
-            {mode === 'password'
-              ? 'Use your username and password for the fastest sign-in.'
-              : 'Request a one-time code, then paste it here to continue.'}
-          </div>
+      <div className="marketing-auth-frameWrap">
+        <div className="marketing-auth-frame">
+          <div className="marketing-auth-hero">
+            <div className="orbit-ring" />
+            <div className="orbit-ring alt" />
+            <div className="orbit-ring inner" />
+            <div className="orbit-sphere main" />
+            <div className="orbit-sphere side" />
+            <div className="orbit-sphere small" />
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error ? <div className="auth-error">{error}</div> : null}
-            {message ? (
-              <div className="rounded-[18px] border border-[var(--accent-border)] bg-[#eef4ff] px-4 py-3 text-sm text-[var(--accent-strong)]">
-                {message}
+            <div className="orbit-card left">
+              <div className="orbit-label">Signal Health</div>
+              <div className="orbit-copy">Track generation quality, repair failing suites, and keep delivery telemetry visible.</div>
+              <div className="orbit-pill">Live status</div>
+            </div>
+
+            <div className="orbit-card bottom">
+              <div className="orbit-label">Mission Feed</div>
+              <div className="orbit-copy">Secure login, OTP access, and history-aware test generation from one control surface.</div>
+            </div>
+
+            <div className="orbit-card right">
+              <div className="orbit-label">CI Ready</div>
+              <div className="orbit-copy">Move from raw code to generated tests and workflow export without leaving the dashboard.</div>
+            </div>
+
+            <div className="hero-content">
+              <div className="marketing-auth-kicker">Planetary command layer</div>
+              <h1 className="marketing-auth-title">
+                Test <span>Orbit</span>
+              </h1>
+              <p className="marketing-auth-copy">
+                Enter a cinematic QA control center for code-driven test generation, suite repair, and CI pipeline preparation.
+              </p>
+              <div className="marketing-auth-bullets">
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Generate framework-ready tests from code, APIs, and stories.
+                </div>
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Review quality telemetry before moving changes downstream.
+                </div>
+                <div className="marketing-auth-bullet">
+                  <span className="marketing-auth-bulletDot" />
+                  Export CI definitions from the same mission console.
+                </div>
               </div>
-            ) : null}
+            </div>
+          </div>
 
-            {mode === 'password' ? (
-              <>
-                <div className="auth-field">
-                  <label className="auth-label" htmlFor="login-username">
-                    Username
-                  </label>
-                  <input
-                    id="login-username"
-                    className="auth-input"
-                    type="text"
-                    placeholder="Enter your username"
-                    value={form.username}
-                    onChange={(e) => update('username', e.target.value)}
-                    autoComplete="username"
-                  />
-                </div>
+          <div className="marketing-auth-card">
+            <div className="marketing-auth-cardHeader">
+              <h2 className="marketing-auth-cardTitle">Sign In</h2>
+              <p className="marketing-auth-cardSub">Reconnect to your station and continue the latest test operation.</p>
+            </div>
 
-                <div className="auth-field">
-                  <label className="auth-label" htmlFor="login-password">
-                    Password
-                  </label>
-                  <input
-                    id="login-password"
-                    className="auth-input"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={form.password}
-                    onChange={(e) => update('password', e.target.value)}
-                    autoComplete="current-password"
-                  />
-                </div>
-
-                <button className="auth-btn" type="submit" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign in'}
+            <div className="auth-toggle">
+              {["password", "otp"].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => {
+                    setMode(item)
+                    setError("")
+                    setMessage("")
+                  }}
+                  className={`auth-toggle-btn${mode === item ? " active" : ""}`}
+                >
+                  {item === "password" ? "Password" : "One-Time Code"}
                 </button>
-              </>
-            ) : (
-              <>
-                <div className="auth-field">
-                  <label className="auth-label" htmlFor="otp-username">
-                    Username
-                  </label>
-                  <input
-                    id="otp-username"
-                    className="auth-input"
-                    type="text"
-                    placeholder="Enter your username"
-                    value={otpState.username}
-                    onChange={(e) => updateOtp('username', e.target.value)}
-                    autoComplete="username"
-                  />
-                </div>
+              ))}
+            </div>
 
-                <div className="flex gap-3">
-                  <button
-                    className="auth-btn flex-1"
-                    type="button"
-                    onClick={handleRequestOtp}
-                    disabled={loading}
-                  >
-                    {loading ? 'Requesting...' : 'Request OTP'}
-                  </button>
-                </div>
+            {error && <div className="auth-error" role="alert">{error}</div>}
+            {message && <div className="auth-message" role="status">{message}</div>}
 
-                {otpState.sent ? (
-                  <>
-                    <div className="auth-status-card">
-                      <div className="auth-status-title">OTP ready</div>
-                      <div className="auth-status-text">
-                        We generated a one-time code for <strong>{otpState.username}</strong>.
-                      </div>
-                    </div>
+            <form onSubmit={handleSubmit} className="marketing-auth-form">
+              {mode === "password" ? (
+                <>
+                  <Field label="Username" id="login-username" type="text" placeholder="Enter your username" value={form.username} onChange={(event) => update("username", event.target.value)} auto="username" />
+                  <Field label="Password" id="login-password" type="password" placeholder="Enter your password" value={form.password} onChange={(event) => update("password", event.target.value)} auto="current-password" />
+                  <ActionButton type="submit" loading={loading} text="Enter Orbit" loadingText="Signing in..." />
+                </>
+              ) : (
+                <>
+                  <Field label="Username" id="otp-username" type="text" placeholder="Enter your username" value={otpState.username} onChange={(event) => updateOtp("username", event.target.value)} auto="username" />
+                  <ActionButton type="button" onClick={handleRequestOtp} loading={loading} text="Request Code" loadingText="Requesting..." />
+                  {otpState.sent && (
+                    <>
+                      {otpState.otpPreview && (
+                        <div style={{ fontSize: "0.78rem", color: "#ffb36d", textAlign: "center" }}>
+                          Demo code: <strong>{otpState.otpPreview}</strong>
+                        </div>
+                      )}
+                      <Field label="Verification Code" id="otp-code" type="text" placeholder="Enter 6-digit code" value={otpState.otp} onChange={(event) => updateOtp("otp", event.target.value)} auto="one-time-code" />
+                      <ActionButton type="submit" loading={loading} text="Verify Access" loadingText="Verifying..." />
+                    </>
+                  )}
+                </>
+              )}
+            </form>
 
-                    <div className="auth-field">
-                      <label className="auth-label" htmlFor="otp-code">
-                        OTP
-                      </label>
-                      <input
-                        id="otp-code"
-                        className="auth-input"
-                        type="text"
-                        placeholder="Enter 6-digit OTP"
-                        value={otpState.otp}
-                        onChange={(e) => updateOtp('otp', e.target.value)}
-                        autoComplete="one-time-code"
-                      />
-                    </div>
-
-                    {otpState.otpPreview ? (
-                      <div className="auth-preview-card">
-                        Demo OTP: <span className="font-semibold text-[var(--text-strong)]">{otpState.otpPreview}</span>
-                      </div>
-                    ) : null}
-
-                    <button className="auth-btn" type="submit" disabled={loading}>
-                      {loading ? 'Verifying...' : 'Verify OTP'}
-                    </button>
-                  </>
-                ) : null}
-              </>
-            )}
-          </form>
-
-          <p className="auth-footer">
-            Don&apos;t have an account?{' '}
-            <Link to="/signup" className="auth-link">
-              Create one
-            </Link>
-          </p>
+            <p className="marketing-auth-footer">
+              Need an account? <Link to="/signup" className="auth-link">Create one</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function Field({ label, id, type, placeholder, value, onChange, auto }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <label htmlFor={id} className="auth-label">{label}</label>
+      <input id={id} type={type} placeholder={placeholder} value={value} onChange={onChange} autoComplete={auto} className="auth-input" />
+    </div>
+  )
+}
+
+function ActionButton({ type, onClick, loading, text, loadingText }) {
+  return (
+    <button type={type} onClick={onClick} disabled={loading} className="auth-btn">
+      {loading ? loadingText : text}
+    </button>
   )
 }

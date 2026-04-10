@@ -1,6 +1,42 @@
 import { verifyToken } from './utils.js'
-import { getRedisJson, isRedisAvailable } from './redis.js'
 import { getAuthSession } from './authRuntimeStore.js'
+
+const rateLimitBuckets = new Map()
+
+export function securityHeaders(req, res, next) {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Referrer-Policy', 'no-referrer')
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-site')
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; connect-src 'self' http://localhost:8000 http://localhost:5173; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+  )
+
+  next()
+}
+
+export function rateLimit({ windowMs = 60_000, max = 20 } = {}) {
+  return function applyRateLimit(req, res, next) {
+    const key = `${req.ip}:${req.path}`
+    const now = Date.now()
+    const current = rateLimitBuckets.get(key)
+
+    if (!current || now > current.resetAt) {
+      rateLimitBuckets.set(key, { count: 1, resetAt: now + windowMs })
+      return next()
+    }
+
+    if (current.count >= max) {
+      return res.status(429).json({ error: 'Too many requests. Please try again shortly.' })
+    }
+
+    current.count += 1
+    next()
+  }
+}
 
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization || ''
@@ -13,17 +49,13 @@ export async function requireAuth(req, res, next) {
   try {
     req.user = verifyToken(token)
 
-    // In local fallback mode, allow a valid JWT even if the in-memory
-    // session store was cleared by a backend restart.
-    if (isRedisAvailable()) {
-      const sessionKey = `auth:session:${req.user.sid}`
-      const session = await getRedisJson(sessionKey)
+    const sessionKey = `auth:session:${req.user.sid}`
+    const session = await getAuthSession(sessionKey)
 
-      if (!session || session.token !== token) {
-        return res.status(401).json({
-          error: 'Session expired or not found in Redis.',
-        })
-      }
+    if (!session || session.token !== token) {
+      return res.status(401).json({
+        error: 'Session expired or not found.',
+      })
     }
 
     next()
