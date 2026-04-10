@@ -8,7 +8,6 @@ This project is especially useful for demos and academic presentations because i
 You can describe this project in one line as:
 
 > An AI-powered test generation platform with built-in security controls, MongoDB-backed history, gamification, and GitHub Actions-based DevSecOps checks.
-=======
 
 ## ScreenShots 
 <img width="1486" height="644" alt="Screenshot 2026-04-10 125048" src="https://github.com/user-attachments/assets/f3faa21c-88d9-452a-a05f-d3ebd0dd1dcb" />
