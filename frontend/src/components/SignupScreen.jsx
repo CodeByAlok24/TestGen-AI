@@ -1,9 +1,13 @@
-﻿import { useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { signup } from "../lib/api"
 import NatureBackground from "./NatureBackground"
+import PublicTopbar from "./PublicTopbar"
 
-const navItems = ["Home", "About", "Platform", "Docs"]
+const AUTH_NAV_ITEMS = [
+  { to: "/about", label: "About" },
+  { to: "/platform", label: "Platform" },
+]
 
 export default function SignupScreen({ onAuth }) {
   const [form, setForm] = useState({ username: "", email: "", password: "" })
@@ -51,27 +55,7 @@ export default function SignupScreen({ onAuth }) {
     <div className="marketing-auth-shell">
       <NatureBackground variant="auth" />
 
-      <div className="marketing-auth-topbar">
-        <div className="marketing-auth-brand">
-          <div className="marketing-auth-brand-mark">
-            <span className="accent">TESTGEN</span> AI
-          </div>
-        </div>
-
-        <div className="marketing-auth-nav" aria-hidden="true">
-          {navItems.map((item) => (
-            <a key={item} href="#">
-              {item}
-            </a>
-          ))}
-        </div>
-
-        <div className="marketing-auth-menu">
-          <button type="button" className="marketing-auth-menuBtn">
-            Mission Setup
-          </button>
-        </div>
-      </div>
+      <PublicTopbar actionLabel="Sign In" actionTo="/login" items={AUTH_NAV_ITEMS} />
 
       <div className="marketing-auth-frameWrap">
         <div className="marketing-auth-frame">
@@ -155,3 +139,5 @@ function Field({ label, id, type, placeholder, value, onChange, auto }) {
     </div>
   )
 }
+
+

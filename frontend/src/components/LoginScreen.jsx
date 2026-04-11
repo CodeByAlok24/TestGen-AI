@@ -1,9 +1,13 @@
-﻿import { useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { login, requestOtp, verifyOtp } from "../lib/api"
 import NatureBackground from "./NatureBackground"
+import PublicTopbar from "./PublicTopbar"
 
-const navItems = ["Home", "About", "Platform", "Docs"]
+const AUTH_NAV_ITEMS = [
+  { to: "/about", label: "About" },
+  { to: "/platform", label: "Platform" },
+]
 
 export default function LoginScreen({ onAuth }) {
   const [form, setForm] = useState({ username: "", password: "" })
@@ -15,6 +19,10 @@ export default function LoginScreen({ onAuth }) {
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
+
+    if (field === "username") {
+      setOtpState((prev) => ({ ...prev, username: value }))
+    }
   }
 
   function updateOtp(field, value) {
@@ -49,32 +57,46 @@ export default function LoginScreen({ onAuth }) {
   async function handleRequestOtp() {
     setError("")
     setMessage("")
-    if (!otpState.username) {
+    const username = String(otpState.username || form.username || "").trim()
+
+    if (!username) {
       setError("Enter your username to request an OTP.")
       return
     }
 
     setLoading(true)
     try {
-      const data = await requestOtp({ username: otpState.username })
-      setOtpState((prev) => ({ ...prev, sent: true, otpPreview: data.otp || "" }))
-      setMessage("One-time access code generated.")
+      const data = await requestOtp({ username })
+      setOtpState((prev) => ({
+        ...prev,
+        username,
+        sent: true,
+        otpPreview: data.otp || "",
+      }))
+      setMessage(data?.message || "One-time access code generated.")
     } catch (err) {
-      setError(err?.response?.data?.error || err?.response?.data?.detail || "Could not generate OTP.")
+      setError(
+        err?.response?.data?.error ||
+          err?.response?.data?.detail ||
+          err?.message ||
+          "Could not generate OTP.",
+      )
     } finally {
       setLoading(false)
     }
   }
 
   async function handleVerifyOtp() {
-    if (!otpState.username || !otpState.otp) {
+    const username = String(otpState.username || form.username || "").trim()
+
+    if (!username || !otpState.otp) {
       setError("Enter your username and OTP.")
       return
     }
 
     setLoading(true)
     try {
-      const user = await verifyOtp({ username: otpState.username, otp: otpState.otp })
+      const user = await verifyOtp({ username, otp: otpState.otp })
       onAuth(user)
     } catch (err) {
       setError(err?.response?.data?.error || err?.response?.data?.detail || "OTP verification failed.")
@@ -87,27 +109,7 @@ export default function LoginScreen({ onAuth }) {
     <div className="marketing-auth-shell">
       <NatureBackground variant="auth" />
 
-      <div className="marketing-auth-topbar">
-        <div className="marketing-auth-brand">
-          <div className="marketing-auth-brand-mark">
-            <span className="accent">TESTGEN</span> AI
-          </div>
-        </div>
-
-        <div className="marketing-auth-nav" aria-hidden="true">
-          {navItems.map((item) => (
-            <a key={item} href="#">
-              {item}
-            </a>
-          ))}
-        </div>
-
-        <div className="marketing-auth-menu">
-          <button type="button" className="marketing-auth-menuBtn">
-            Orbit Access
-          </button>
-        </div>
-      </div>
+      <PublicTopbar actionLabel="Create Account" actionTo="/signup" items={AUTH_NAV_ITEMS} />
 
       <div className="marketing-auth-frameWrap">
         <div className="marketing-auth-frame">
@@ -173,6 +175,10 @@ export default function LoginScreen({ onAuth }) {
                   type="button"
                   onClick={() => {
                     setMode(item)
+                    setOtpState((prev) => ({
+                      ...prev,
+                      username: prev.username || form.username,
+                    }))
                     setError("")
                     setMessage("")
                   }}
@@ -238,3 +244,5 @@ function ActionButton({ type, onClick, loading, text, loadingText }) {
     </button>
   )
 }
+
+

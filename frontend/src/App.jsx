@@ -5,6 +5,7 @@ import "./App.css";
 import LoginScreen from "./components/LoginScreen";
 import SignupScreen from "./components/SignupScreen";
 import GamefiedDashboard from "./components/GamefiedDashboard";
+import MarketingSitePage from "./components/MarketingSitePage";
 
 export default function App() {
   const [user, setUser] = useState(() => {
@@ -30,11 +31,15 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<MarketingSitePage page="home" />} />
+        <Route path="/about" element={<MarketingSitePage page="about" />} />
+        <Route path="/platform" element={<MarketingSitePage page="platform" />} />
+        <Route path="/docs" element={<MarketingSitePage page="docs" />} />
         <Route
           path="/login"
           element={
             user ? (
-              <Navigate to="/" replace />
+              <Navigate to="/app" replace />
             ) : (
               <LoginScreen onAuth={handleAuth} />
             )
@@ -44,14 +49,14 @@ export default function App() {
           path="/signup"
           element={
             user ? (
-              <Navigate to="/" replace />
+              <Navigate to="/app" replace />
             ) : (
               <SignupScreen onAuth={handleAuth} />
             )
           }
         />
         <Route
-          path="/"
+          path="/app"
           element={
             user ? (
               <GamefiedDashboard user={user} onLogout={handleLogout} />

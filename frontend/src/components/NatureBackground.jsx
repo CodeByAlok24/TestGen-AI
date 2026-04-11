@@ -1,7 +1,8 @@
-﻿const COMETS = [
+const COMETS = [
   { id: 'c1', top: '14%', delay: '0s', duration: '11s', size: 180, angle: -18 },
   { id: 'c2', top: '28%', delay: '3.5s', duration: '13s', size: 220, angle: -14 },
   { id: 'c3', top: '52%', delay: '6.5s', duration: '12s', size: 160, angle: -20 },
+  { id: 'c4', top: '70%', delay: '9.5s', duration: '15s', size: 200, angle: -12 },
 ]
 
 const ASTEROIDS = [
@@ -15,6 +16,7 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
   const isAuth = variant === "auth"
   const cometSet = isAuth ? COMETS.slice(0, 2) : COMETS
   const asteroidSet = isAuth ? ASTEROIDS.slice(0, 2) : ASTEROIDS
+
   return (
     <div
       aria-hidden="true"
@@ -47,6 +49,12 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
             50% { opacity: 0.42; transform: scale(1.18); }
           }
 
+          @keyframes codex-star-drift {
+            0% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(10px, -12px, 0); }
+            100% { transform: translate3d(0, 0, 0); }
+          }
+
           @media (prefers-reduced-motion: reduce) {
             .codex-comet,
             .codex-asteroid,
@@ -70,14 +78,14 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         style={{
           position: 'absolute',
           left: '50%',
-          top: '32%',
-          width: 560,
-          height: 560,
+          top: '36%',
+          width: 680,
+          height: 680,
           transform: 'translate(-50%, -50%)',
           borderRadius: '50%',
           background:
             'radial-gradient(circle at 34% 28%, rgba(255,216,168,0.92), rgba(255,120,40,0.92) 28%, rgba(152,49,11,0.96) 58%, rgba(61,18,10,0.98) 76%, rgba(18,8,10,0.98) 100%)',
-          boxShadow: '0 0 180px rgba(255,102,24,0.16), inset -70px -70px 120px rgba(35,7,5,0.58)',
+          boxShadow: '0 0 220px rgba(255,102,24,0.18), inset -70px -70px 120px rgba(35,7,5,0.58)',
           opacity: 0.28,
           filter: 'blur(1px)',
         }}
@@ -87,9 +95,9 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         style={{
           position: 'absolute',
           left: '50%',
-          top: '34%',
-          width: 740,
-          height: 740,
+          top: '38%',
+          width: 920,
+          height: 920,
           transform: 'translate(-50%, -50%) rotate(8deg)',
           borderRadius: '50%',
           border: '2px dashed rgba(255,255,255,0.16)',
@@ -101,9 +109,9 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         style={{
           position: 'absolute',
           left: '50%',
-          top: '34%',
-          width: 980,
-          height: 980,
+          top: '38%',
+          width: 1220,
+          height: 1220,
           transform: 'translate(-50%, -50%) rotate(-12deg)',
           borderRadius: '50%',
           border: '2px dashed rgba(255,255,255,0.1)',
@@ -115,10 +123,10 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         <div
           style={{
             position: 'absolute',
-            left: '10%',
+            left: '8%',
             top: '30%',
-            width: 260,
-            height: 260,
+            width: 280,
+            height: 280,
             borderRadius: '50%',
             background:
               'radial-gradient(circle at 30% 24%, rgba(155,225,255,0.95), rgba(72,144,226,0.88) 44%, rgba(20,40,97,0.96) 80%)',
@@ -132,10 +140,10 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         <div
           style={{
             position: 'absolute',
-            right: '6%',
-            top: '26%',
-            width: 360,
-            height: 360,
+            right: '5%',
+            top: '24%',
+            width: 390,
+            height: 390,
             borderRadius: '50%',
             background:
               'radial-gradient(circle at 30% 30%, rgba(220,205,164,0.95), rgba(145,123,96,0.86) 44%, rgba(51,43,37,0.95) 80%)',
@@ -201,13 +209,14 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
         />
       ))}
 
-      {Array.from({ length: 50 }).map((_, index) => {
+      {Array.from({ length: 72 }).map((_, index) => {
         const x = (index * 31) % 100
         const y = (index * 17) % 100
         const size = index % 6 === 0 ? 3 : index % 3 === 0 ? 2 : 1.5
         const opacity = 0.18 + (index % 5) * 0.08
         const duration = 2.8 + (index % 4) * 1.2
         const delay = (index % 7) * 0.6
+        const driftDuration = 18 + (index % 5) * 5
 
         return (
           <span
@@ -223,7 +232,7 @@ export default function NatureBackground({ showDeckAccents = false, variant = "a
               background: '#ffffff',
               opacity,
               boxShadow: '0 0 14px rgba(255,255,255,0.36)',
-              animation: `codex-star-pulse ${duration}s ease-in-out ${delay}s infinite`,
+              animation: `codex-star-pulse ${duration}s ease-in-out ${delay}s infinite, codex-star-drift ${driftDuration}s ease-in-out ${delay}s infinite`,
             }}
           />
         )

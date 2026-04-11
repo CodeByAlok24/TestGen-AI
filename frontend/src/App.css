@@ -74,9 +74,10 @@ select {
 .marketing-auth-topbar {
   position: relative;
   z-index: 2;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 28px 32px 18px;
+  width: 100%;
+  margin: 0;
+  padding: 28px clamp(20px, 3vw, 42px) 18px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -95,6 +96,7 @@ select {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--space-text);
+  text-decoration: none;
 }
 
 .marketing-auth-brand-mark .accent {
@@ -105,6 +107,9 @@ select {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  z-index: 4;
+  pointer-events: auto;
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid rgba(138, 150, 255, 0.14);
@@ -129,6 +134,17 @@ select {
   transition: 0.2s ease;
 }
 
+.marketing-nav-link.active {
+  color: var(--space-text);
+  background: rgba(255,255,255,0.06);
+}
+
+.marketing-auth-brand,
+.marketing-auth-menu {
+  position: relative;
+  z-index: 4;
+}
+
 .marketing-auth-nav a:hover,
 .marketing-auth-nav button:hover,
 .topbar-nav-btn:hover {
@@ -143,6 +159,9 @@ select {
 }
 
 .marketing-auth-menuBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 18px;
   border-radius: 999px;
   border: 1px solid var(--space-border-strong);
@@ -152,27 +171,30 @@ select {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  text-decoration: none;
+}
+
+.marketing-auth-menuLink {
+  box-sizing: border-box;
 }
 
 .marketing-auth-frameWrap,
 .marketing-app-frameWrap {
   position: relative;
   z-index: 2;
-  max-width: 1280px;
-  margin: 0 auto;
   width: 100%;
-  padding: 0 32px 32px;
+  padding: 0 clamp(18px, 3vw, 42px) clamp(18px, 3vw, 34px);
   box-sizing: border-box;
 }
 
 .marketing-auth-frame {
   width: 100%;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 112px);
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) 430px;
-  gap: 22px;
-  padding: 20px;
-  border-radius: 32px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(380px, 0.9fr);
+  gap: clamp(18px, 2vw, 28px);
+  padding: clamp(18px, 2vw, 24px);
+  border-radius: 34px;
   border: 1px solid var(--space-border);
   background: linear-gradient(180deg, rgba(9, 8, 22, 0.88), rgba(10, 9, 24, 0.94));
   box-shadow: var(--space-shadow);
@@ -181,7 +203,7 @@ select {
 
 .marketing-auth-hero {
   position: relative;
-  min-height: 640px;
+  min-height: clamp(640px, calc(100vh - 180px), 860px);
   border-radius: 28px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.05);
@@ -198,8 +220,8 @@ select {
 }
 
 .orbit-sphere.main {
-  width: min(46vw, 430px);
-  height: min(46vw, 430px);
+  width: min(42vw, 520px);
+  height: min(42vw, 520px);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -45%);
@@ -239,16 +261,16 @@ select {
 }
 
 .orbit-ring {
-  width: min(60vw, 560px);
-  height: min(60vw, 560px);
+  width: min(58vw, 660px);
+  height: min(58vw, 660px);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -48%);
 }
 
 .orbit-ring.alt {
-  width: min(74vw, 690px);
-  height: min(74vw, 690px);
+  width: min(72vw, 840px);
+  height: min(72vw, 840px);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -47%);
@@ -256,8 +278,8 @@ select {
 }
 
 .orbit-ring.inner {
-  width: min(34vw, 320px);
-  height: min(34vw, 320px);
+  width: min(30vw, 360px);
+  height: min(30vw, 360px);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -43%);
@@ -333,10 +355,10 @@ select {
 
 .hero-content {
   position: absolute;
-  left: 36px;
-  top: 180px;
+  left: clamp(28px, 4vw, 58px);
+  top: clamp(150px, 18vh, 230px);
   z-index: 2;
-  max-width: 520px;
+  max-width: min(560px, 48%);
 }
 
 .marketing-auth-bullets {
@@ -366,7 +388,7 @@ select {
 
 .marketing-auth-kicker {
   color: var(--space-accent-soft);
-  font-size: 0.74rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -386,8 +408,8 @@ select {
 .marketing-auth-copy {
   margin-top: 18px;
   color: var(--space-text-soft);
-  font-size: 0.96rem;
-  line-height: 1.8;
+  font-size: 1.1rem;
+  line-height: 1.9;
 }
 
 .marketing-auth-card,
@@ -401,7 +423,11 @@ select {
 }
 
 .marketing-auth-card {
-  padding: 34px 28px;
+  min-height: 100%;
+  padding: clamp(28px, 2.5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .marketing-auth-cardHeader {
@@ -413,7 +439,7 @@ select {
 .marketing-auth-cardTitle {
   margin: 0;
   color: var(--space-text);
-  font-size: 0.76rem;
+  font-size: 0.88rem;
   font-weight: 800;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -422,7 +448,7 @@ select {
 .marketing-auth-cardSub {
   margin: 0;
   color: var(--space-text-soft);
-  font-size: 0.92rem;
+  font-size: 1.04rem;
   line-height: 1.65;
 }
 
@@ -522,12 +548,12 @@ select {
 
 .marketing-auth-form {
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 
 .auth-label {
   color: var(--space-text-dim);
-  font-size: 0.72rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -540,8 +566,9 @@ select {
   border: 1px solid rgba(215,219,255,0.14);
   background: rgba(255,255,255,0.05);
   color: var(--space-text);
-  padding: 14px 16px;
+  padding: 16px 18px;
   outline: none;
+  font-size: 1.02rem;
 }
 
 .auth-input::placeholder {
@@ -566,7 +593,7 @@ select {
   border: 1px solid rgba(212, 216, 255, 0.14);
   background: rgba(255,255,255,0.03);
   color: var(--space-text-dim);
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -583,7 +610,7 @@ select {
 .auth-message {
   border-radius: 14px;
   padding: 12px 14px;
-  font-size: 0.86rem;
+  font-size: 0.96rem;
   line-height: 1.55;
   margin-bottom: 14px;
 }
@@ -603,7 +630,7 @@ select {
 .marketing-auth-footer {
   margin: 18px 0 0;
   color: var(--space-text-soft);
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.6;
 }
 
@@ -615,8 +642,9 @@ select {
 
 .marketing-app-frame {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: clamp(16px, 1.8vw, 24px);
+  align-items: start;
 }
 
 .marketing-app-left {
@@ -637,7 +665,7 @@ select {
 .section-eyebrow {
   display: inline-block;
   color: var(--space-text-dim);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -664,8 +692,8 @@ select {
 .dashboard-hero {
   position: relative;
   overflow: hidden;
-  min-height: 460px;
-  padding: 34px;
+  min-height: clamp(480px, 58vh, 660px);
+  padding: clamp(28px, 3vw, 42px);
   background:
     radial-gradient(circle at 50% 44%, rgba(255, 122, 47, 0.16), transparent 14%),
     linear-gradient(180deg, rgba(9, 8, 22, 0.92), rgba(10, 9, 24, 0.98));
@@ -680,8 +708,8 @@ select {
 }
 
 .dashboard-orbit-main {
-  width: min(48vw, 430px);
-  height: min(48vw, 430px);
+  width: min(42vw, 520px);
+  height: min(42vw, 520px);
   left: 50%;
   top: 51%;
   transform: translate(-5%, -38%);
@@ -704,8 +732,8 @@ select {
 }
 
 .dashboard-ring {
-  width: 760px;
-  height: 760px;
+  width: min(74vw, 920px);
+  height: min(74vw, 920px);
   left: 50%;
   top: 52%;
   transform: translate(-9%, -50%) rotate(10deg);
@@ -713,8 +741,8 @@ select {
 }
 
 .dashboard-ring-alt {
-  width: 980px;
-  height: 980px;
+  width: min(92vw, 1180px);
+  height: min(92vw, 1180px);
   left: 50%;
   top: 52%;
   transform: translate(-10%, -51%) rotate(-8deg);
@@ -724,12 +752,12 @@ select {
 .dashboard-hero-content {
   position: relative;
   z-index: 2;
-  max-width: 560px;
+  max-width: min(620px, 48%);
 }
 
 .dashboard-kicker {
   color: var(--space-accent-soft);
-  font-size: 0.74rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -749,8 +777,9 @@ select {
 .dashboard-copy {
   max-width: 560px;
   color: var(--space-text-soft);
-  line-height: 1.8;
+  line-height: 1.9;
   margin-top: 16px;
+  font-size: 1.08rem;
 }
 
 .dashboard-cta-row {
@@ -865,7 +894,7 @@ select {
 
 .nav-label {
   color: var(--space-text);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -874,8 +903,8 @@ select {
 .nav-hint {
   margin-top: 4px;
   color: var(--space-text-dim);
-  font-size: 0.72rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 .badge-card,
@@ -888,10 +917,90 @@ select {
   background: rgba(6, 10, 22, 0.94);
   color: #d9f6ff;
   padding: 16px;
-  font-size: 0.78rem;
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.8;
   overflow: auto;
 }
+
+.marketing-site-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 clamp(18px, 3vw, 42px) 34px;
+  box-sizing: border-box;
+}
+
+.marketing-site-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: clamp(18px, 2vw, 28px);
+  min-height: calc(100vh - 120px);
+  padding: clamp(28px, 3vw, 42px);
+  align-items: center;
+}
+
+.marketing-site-copy {
+  max-width: 760px;
+}
+
+.marketing-site-title {
+  margin: 16px 0 0;
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.94;
+  text-transform: uppercase;
+}
+
+.marketing-site-title span {
+  display: block;
+  color: var(--space-accent);
+}
+
+.marketing-site-text {
+  margin-top: 18px;
+  color: var(--space-text-soft);
+  font-size: 1.12rem;
+  line-height: 1.9;
+  max-width: 700px;
+}
+
+.marketing-site-bullets {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  max-width: 720px;
+  font-size: 1rem;
+}
+
+.marketing-site-actions {
+  margin-top: 28px;
+}
+
+.marketing-site-cta,
+.marketing-site-secondary {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.marketing-site-panels {
+  display: grid;
+  gap: 16px;
+}
+
+.marketing-site-panel {
+  border-radius: 24px;
+  border: 1px solid var(--space-border);
+  background: linear-gradient(180deg, rgba(18, 16, 40, 0.78), rgba(10, 9, 24, 0.92));
+  padding: 22px 20px;
+  backdrop-filter: blur(16px);
+}
+
+.marketing-site-panelCopy {
+  margin-top: 12px;
+  color: var(--space-text-soft);
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
 
 .badge-card {
   background: linear-gradient(180deg, rgba(18, 16, 40, 0.84), rgba(10, 9, 24, 0.9));
@@ -995,12 +1104,18 @@ select {
 
 @media (max-width: 1100px) {
   .marketing-auth-frame,
-  .marketing-app-frame {
+  .marketing-app-frame,
+  .marketing-site-hero {
     grid-template-columns: 1fr;
   }
 
   .marketing-auth-hero {
     min-height: 560px;
+  }
+
+  .hero-content,
+  .dashboard-hero-content {
+    max-width: 100%;
   }
 
   .dashboard-orbit-main,
@@ -1063,8 +1178,17 @@ select {
     top: 54%;
   }
 
+  .hero-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    max-width: 100%;
+    padding-top: 26px;
+  }
+
   .marketing-auth-title,
-  .dashboard-title {
+  .dashboard-title,
+  .marketing-site-title {
     font-size: clamp(2.3rem, 11vw, 4.4rem);
   }
 }
