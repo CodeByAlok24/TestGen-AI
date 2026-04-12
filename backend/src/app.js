@@ -44,38 +44,30 @@ import {
 
 const app = express()
 
-// ✅ FIXED CORS
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin) return callback(null, true)
+// ✅ FIXED CORS (FINAL WORKING)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://test-gen-ai-gamma.vercel.app'
+]
 
-      const allowedOrigins = new Set([
-        config.clientUrl,
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'https://test-gen-ai-gamma.vercel.app', // ✅ your frontend
-      ])
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}))
 
-      if (allowedOrigins.has(origin)) {
-        return callback(null, true)
-      }
+app.options('*', cors()) // ✅ important for preflight
 
-      return callback(new Error('CORS origin not allowed'))
-    },
-    credentials: true,
-  }),
-)
-
+// ================= MIDDLEWARE =================
 app.use(securityHeaders)
 app.use(express.json({ limit: '2mb' }))
 
-// ✅ optional root route
+// ================= ROOT =================
 app.get('/', (req, res) => {
   res.send('API is running 🚀')
 })
 
-// health check
+// ================= HEALTH =================
 app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
