@@ -13,7 +13,7 @@ const API = axios.create({
 API.interceptors.request.use((request) => {
   const token = localStorage.getItem(TOKEN_KEY)
 
-  console.log("TOKEN:", token) // ✅ DEBUG
+  console.log("TOKEN:", token)
 
   if (token) {
     request.headers.Authorization = `Bearer ${token}`
@@ -38,7 +38,7 @@ API.interceptors.response.use(
 
 // ✅ Save token
 function persistAuth(data) {
-  console.log("LOGIN RESPONSE:", data) // ✅ DEBUG
+  console.log("LOGIN RESPONSE:", data)
 
   if (data?.token) {
     localStorage.setItem(TOKEN_KEY, data.token)
@@ -86,5 +86,34 @@ export async function healFailingTest(payload) {
 
 export async function exportCiWorkflow(payload) {
   const { data } = await API.post('/ci-export', payload)
+  return data
+}
+
+// ================= USER DATA =================
+
+export async function getTestCaseHistory() {
+  const { data } = await API.get('/testcases/history')
+  return data
+}
+
+export async function getGamificationProfile(userId) {
+  const { data } = await API.get(`/gamification/user/${userId}`)
+  return data
+}
+
+// ================= CHALLENGES =================
+
+export async function getDailyChallenges() {
+  const { data } = await API.get('/challenges/daily')
+  return data
+}
+
+export async function getWeeklyChallenges() {
+  const { data } = await API.get('/challenges/weekly')
+  return data
+}
+
+export async function claimChallengeReward(challengeId) {
+  const { data } = await API.post(`/challenges/${challengeId}/claim-reward`)
   return data
 }
