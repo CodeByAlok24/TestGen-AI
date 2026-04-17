@@ -199,10 +199,6 @@ OPENAI_TEMPERATURE=0.2
 GROQ_API_KEY=
 GROQ_MODEL=llama-3.3-70b-versatile
 GROQ_TEMPERATURE=0.2
-HUGGINGFACE_API_KEY=
-HUGGINGFACE_MODEL=meta-llama/Llama-3.1-70B-Instruct
-HUGGINGFACE_BASE_URL=https://router.huggingface.co/v1
-
 MONGO_URL=mongodb://localhost:27017
 MONGO_DB=testgen
 ```
